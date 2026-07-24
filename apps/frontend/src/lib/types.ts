@@ -28,7 +28,7 @@ export const TeamMemberSchema = z.object({
   role: z.string(),
   initials: z.string().min(1).max(3),
   commitsPerWeek: z.number().nonnegative(),
-  avgReviewTimeDays: z.number().nonnegative(),
+  reviewsPerWeek: z.number().nonnegative(),
   onGoalRate: z.number().min(0).max(100),
   activityStatus: MemberActivityStatusSchema,
 });
@@ -54,7 +54,7 @@ export const BusFactorAreaSchema = z.object({
   id: z.string(),
   area: z.string(),
   topOwner: z.string(),
-  ownershipPercent: z.number().min(0).max(100),
+  coveragePercent: z.number().min(0).max(100),
   riskLevel: RiskLevelSchema,
 });
 export type BusFactorArea = z.infer<typeof BusFactorAreaSchema>;
@@ -96,3 +96,18 @@ export const TeamSchema = z.object({
   busFactorAreas: z.array(BusFactorAreaSchema),
 });
 export type Team = z.infer<typeof TeamSchema>;
+
+// Team health card (teams overview grid) ------------------------------------
+
+export const TeamHealthCardSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  icon: z.string(),
+  status: TeamStatusSchema,
+  healthScore: z.number().min(0).max(100),
+  sparkline: z.array(z.number()).min(2),
+  openPrs: z.number().int().nonnegative(),
+  avgReviewTimeDays: z.number().nonnegative(),
+  anomalyCount: z.number().int().nonnegative(),
+});
+export type TeamHealthCard = z.infer<typeof TeamHealthCardSchema>;

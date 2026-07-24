@@ -1,6 +1,5 @@
-// "Bus-factor risk" card: code areas with an ownership percentage, a colored progress bar, and a risk label.
-import { Badge, type BadgeVariant } from "@/components/ui/Badge";
-import { Card } from "@/components/ui/Card";
+import { SectionCard } from "@/components/ui/SectionCard";
+import { Icon } from "@/components/ui/Icon";
 import { cn } from "@/lib/cn";
 import type { BusFactorArea, RiskLevel } from "@/lib/types";
 
@@ -9,61 +8,49 @@ export interface BusFactorRiskCardProps {
   className?: string;
 }
 
-const RISK_BADGE_VARIANT: Record<RiskLevel, BadgeVariant> = {
-  low: "success",
-  medium: "warning",
-  high: "error",
-};
-
 const RISK_LABEL: Record<RiskLevel, string> = {
   low: "Low risk",
   medium: "Medium risk",
   high: "High risk",
 };
 
-const RISK_BAR_CLASSES: Record<RiskLevel, string> = {
-  low: "bg-state-success",
-  medium: "bg-state-warning",
-  high: "bg-state-error",
+const RISK_TEXT_CLASSES: Record<RiskLevel, string> = {
+  low: "text-emerald-600",
+  medium: "text-tertiary",
+  high: "text-error",
 };
 
-export function BusFactorRiskCard({
-  areas,
-  className,
-}: BusFactorRiskCardProps) {
+const RISK_BAR_CLASSES: Record<RiskLevel, string> = {
+  low: "bg-emerald-500",
+  medium: "bg-tertiary",
+  high: "bg-error",
+};
+
+export function BusFactorRiskCard({ areas, className }: BusFactorRiskCardProps) {
   return (
-    <Card className={cn("p-4 sm:p-5", className)}>
-      <h2 className="text-sm font-semibold text-neutral-primary">
-        Bus-factor risk
-      </h2>
-      <ul className="mt-4 flex flex-col gap-4">
+    <SectionCard
+      title="Bus-factor Risk"
+      action={<Icon name="info" className="text-outline" />}
+      className={className}
+    >
+      <div className="space-y-5">
         {areas.map((area) => (
-          <li key={area.id}>
-            <div className="flex items-center justify-between gap-3">
-              <div>
-                <p className="text-sm font-medium text-neutral-primary">
-                  {area.area}
-                </p>
-                <p className="text-xs text-neutral-tertiary">
-                  {area.topOwner} owns {area.ownershipPercent}%
-                </p>
-              </div>
-              <Badge variant={RISK_BADGE_VARIANT[area.riskLevel]}>
+          <div key={area.id}>
+            <div className="mb-2 flex justify-between">
+              <span className="text-body-sm font-semibold">{area.area}</span>
+              <span className={cn("text-body-sm", RISK_TEXT_CLASSES[area.riskLevel])}>
                 {RISK_LABEL[area.riskLevel]}
-              </Badge>
+              </span>
             </div>
-            <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-neutral-lighter">
+            <div className="h-2 w-full rounded-full bg-surface-container">
               <div
-                className={cn(
-                  "h-full rounded-full",
-                  RISK_BAR_CLASSES[area.riskLevel],
-                )}
-                style={{ width: `${area.ownershipPercent}%` }}
+                className={cn("h-2 rounded-full", RISK_BAR_CLASSES[area.riskLevel])}
+                style={{ width: `${area.coveragePercent}%` }}
               />
             </div>
-          </li>
+          </div>
         ))}
-      </ul>
-    </Card>
+      </div>
+    </SectionCard>
   );
 }

@@ -26,13 +26,13 @@ ChartJS.register(
 );
 
 // Canvas rendering can't consume Tailwind classes, so these mirror the
-// brand / state / neutral tokens in tailwind.config.ts as literal colors.
-const LINE_COLOR = "#0078d4";
-const LINE_FILL_COLOR = "rgba(0, 120, 212, 0.12)";
-const ANOMALY_COLOR = "#d13438";
-const BASELINE_COLOR = "#a19f9d";
+// Material-3 tokens in tailwind.config.ts as literal colors.
+const LINE_COLOR = "#005faa";
+const LINE_FILL_COLOR = "rgba(0, 95, 170, 0.12)";
+const ANOMALY_COLOR = "#ba1a1a";
+const BASELINE_COLOR = "#717783";
 const AXIS_TEXT_COLOR = "#605e5c";
-const GRID_COLOR = "#edebe9";
+const GRID_COLOR = "#c0c7d4";
 
 export interface ReviewTimeDataPoint {
   /** ISO date string, e.g. "2026-06-24" */

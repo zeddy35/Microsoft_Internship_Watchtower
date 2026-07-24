@@ -1,0 +1,515 @@
+<!-- Watchtower Dashboard - Azure Core Networking -->
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Watchtower | Azure Core Networking</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&amp;family=JetBrains+Mono&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20;
+            vertical-align: middle;
+        }
+        body {
+            background-color: #FAF9F8;
+            color: #181c22;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #EDEBE9;
+            border-radius: 10px;
+        }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(8px);
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                "tertiary-fixed": "#ffdbc8",
+                "outline": "#717783",
+                "on-primary-fixed": "#001c39",
+                "primary-container": "#0078d4",
+                "surface-dim": "#d7dae2",
+                "on-tertiary": "#ffffff",
+                "error": "#ba1a1a",
+                "outline-variant": "#c0c7d4",
+                "surface-tint": "#0060ab",
+                "primary-fixed": "#d3e3ff",
+                "surface": "#f8f9ff",
+                "surface-container-high": "#e6e8f0",
+                "surface-container-low": "#f1f3fc",
+                "inverse-on-surface": "#eef0f9",
+                "on-secondary": "#ffffff",
+                "on-secondary-container": "#666462",
+                "tertiary-fixed-dim": "#ffb689",
+                "surface-variant": "#e0e2ea",
+                "secondary-container": "#e6e2df",
+                "on-background": "#181c22",
+                "error-container": "#ffdad6",
+                "secondary": "#605e5c",
+                "on-secondary-fixed-variant": "#484645",
+                "on-error": "#ffffff",
+                "on-primary": "#ffffff",
+                "on-primary-container": "#ffffff",
+                "secondary-fixed-dim": "#c9c6c3",
+                "background": "#f8f9ff",
+                "on-tertiary-fixed-variant": "#743500",
+                "secondary-fixed": "#e6e2df",
+                "on-surface-variant": "#404752",
+                "inverse-surface": "#2d3137",
+                "on-tertiary-fixed": "#311300",
+                "tertiary-container": "#bc5b00",
+                "tertiary": "#974700",
+                "surface-container-lowest": "#ffffff",
+                "on-surface": "#181c22",
+                "surface-container": "#ebeef6",
+                "surface-bright": "#f8f9ff",
+                "on-primary-fixed-variant": "#004883",
+                "on-error-container": "#93000a",
+                "primary-fixed-dim": "#a3c9ff",
+                "inverse-primary": "#a3c9ff",
+                "primary": "#005faa",
+                "surface-container-highest": "#e0e2ea",
+                "on-secondary-fixed": "#1c1b1a",
+                "on-tertiary-container": "#ffffff"
+              },
+              "borderRadius": {
+                "DEFAULT": "0.125rem",
+                "lg": "0.25rem",
+                "xl": "0.5rem",
+                "full": "0.75rem"
+              },
+              "spacing": {
+                "margin_page": "24px",
+                "stack_lg": "16px",
+                "gutter": "16px",
+                "stack_sm": "4px",
+                "stack_md": "8px",
+                "nav_rail_width": "200px"
+              },
+              "fontFamily": {
+                "code-snippet": ["JetBrains Mono"],
+                "title-sm": ["Inter"],
+                "label-uppercase": ["Inter"],
+                "display-lg": ["Inter"],
+                "body-md": ["Inter"],
+                "body-sm": ["Inter"],
+                "headline-md": ["Inter"]
+              },
+              "fontSize": {
+                "code-snippet": ["13px", {"lineHeight": "20px", "fontWeight": "400"}],
+                "title-sm": ["16px", {"lineHeight": "22px", "fontWeight": "600"}],
+                "label-uppercase": ["11px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                "display-lg": ["28px", {"lineHeight": "36px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                "body-sm": ["12px", {"lineHeight": "16px", "fontWeight": "400"}],
+                "headline-md": ["20px", {"lineHeight": "28px", "fontWeight": "600"}]
+              }
+            },
+          },
+        }
+    </script>
+</head>
+<body class="font-body-md text-body-md overflow-hidden">
+<!-- Sidebar Navigation Rail -->
+<nav class="w-nav_rail_width h-screen fixed left-0 top-0 bg-surface border-r border-outline-variant flex flex-col z-50">
+<div class="p-6 flex items-center gap-3">
+<div class="w-8 h-8 bg-primary rounded flex items-center justify-center text-white">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">castle</span>
+</div>
+<span class="font-headline-md text-headline-md font-bold text-primary">Watchtower</span>
+</div>
+<div class="flex-1 px-3 space-y-1 mt-4">
+<a class="flex items-center gap-3 px-4 py-2 text-secondary hover:bg-surface-container-low transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span>Overview</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 bg-surface-container-high text-primary border-l-4 border-primary font-semibold" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">groups</span>
+<span>Teams</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 text-secondary hover:bg-surface-container-low transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">warning</span>
+<span>Anomalies</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 text-secondary hover:bg-surface-container-low transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">summarize</span>
+<span>Weekly digest</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 text-secondary hover:bg-surface-container-low transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span>Settings</span>
+</a>
+<!-- Sub-Teams Selection -->
+<div class="mt-8 px-4">
+<p class="font-label-uppercase text-label-uppercase text-outline mb-4">FAVORITE TEAMS</p>
+<div class="space-y-3">
+<div class="flex items-center gap-3 group cursor-pointer">
+<div class="w-2 h-2 rounded-full bg-tertiary"></div>
+<span class="text-body-sm font-semibold truncate">Azure Core Networking</span>
+</div>
+<div class="flex items-center gap-3 group cursor-pointer opacity-60 hover:opacity-100">
+<div class="w-2 h-2 rounded-full bg-emerald-500"></div>
+<span class="text-body-sm truncate">Global WAN</span>
+</div>
+<div class="flex items-center gap-3 group cursor-pointer opacity-60 hover:opacity-100">
+<div class="w-2 h-2 rounded-full bg-error"></div>
+<span class="text-body-sm truncate">Edge Services</span>
+</div>
+</div>
+</div>
+</div>
+<div class="p-4 border-t border-outline-variant space-y-1">
+<a class="flex items-center gap-3 px-4 py-2 text-secondary hover:bg-surface-container-low transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">help</span>
+<span>Support</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 text-secondary hover:bg-surface-container-low transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">account_circle</span>
+<span>Account</span>
+</a>
+</div>
+</nav>
+<!-- Main Workspace -->
+<main class="ml-nav_rail_width h-screen flex flex-col overflow-y-auto custom-scrollbar">
+<!-- Top App Bar -->
+<header class="h-16 flex items-center justify-between px-margin_page bg-surface-container-lowest border-b border-outline-variant sticky top-0 z-40">
+<div class="flex items-center gap-4">
+<div class="flex items-center bg-surface-container rounded-lg px-3 py-1.5 w-64 border border-outline-variant">
+<span class="material-symbols-outlined text-outline mr-2">search</span>
+<input class="bg-transparent border-none focus:ring-0 text-body-sm w-full p-0" placeholder="Search teams or repos..." type="text"/>
+</div>
+<nav class="hidden md:flex gap-6">
+<a class="text-primary border-b-2 border-primary font-semibold text-title-sm py-5" href="#">Teams</a>
+<a class="text-secondary hover:text-primary transition-colors text-title-sm py-5" href="#">Microsoft Org</a>
+<a class="text-secondary hover:text-primary transition-colors text-title-sm py-5" href="#">Deployment Hub</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary cursor-pointer hover:text-primary">notifications</span>
+<span class="material-symbols-outlined text-secondary cursor-pointer hover:text-primary">history</span>
+</div>
+<button class="bg-primary text-white px-4 py-1.5 rounded-lg font-semibold text-body-sm hover:opacity-90 transition-all flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">download</span>
+                    Export digest
+                </button>
+<div class="w-8 h-8 rounded-full overflow-hidden border border-outline-variant">
+<img class="w-full h-full object-cover" data-alt="A professional headshot of a senior software engineering manager in a clean, brightly lit corporate environment. They are wearing professional attire and looking into the camera with a confident yet approachable expression. High-end portrait lighting creates soft shadows, maintaining a modern, corporate light-mode aesthetic consistent with the Microsoft UI style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCuVOBw6w8DEuCKgqP77lfVhUXbd4tbClPgTgQP5M7vH_SXuKS35lArjY3NFabsILMyxSWZTkTpbprNnk63tPArwbBCHv92F41kN7Z82RgeIqNCFCVVGjq0cVYjsRK-dz2KaKKjFLOlgvybZdL-vbcmIv_Oqiiaqr8rxSY2s_FO08zUuby_KYdStx9b_kE_QWRO5LJG1LF10OKlMUwbk8mYyq_3r59FZoLPSsQsFDf5cqBlksBv5bdk0UhG0uogljxqIseQ2LRU_SU"/>
+</div>
+</div>
+</header>
+<!-- Content Canvas -->
+<div class="p-margin_page space-y-6">
+<!-- Page Header Section -->
+<section class="flex justify-between items-end">
+<div>
+<div class="flex items-center gap-3 mb-1">
+<h1 class="font-headline-md text-headline-md font-semibold">Azure Core Networking</h1>
+<span class="px-3 py-0.5 bg-tertiary-fixed text-on-tertiary-fixed-variant rounded-full text-body-sm font-bold flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-tertiary"></span>
+                            At risk
+                        </span>
+</div>
+<p class="text-secondary text-body-md">12 engineers · GitHub · health score <span class="font-bold text-tertiary">47/100</span></p>
+</div>
+<div class="flex gap-3">
+<button class="bg-white border border-outline-variant px-4 py-1.5 rounded flex items-center gap-2 text-body-sm font-semibold hover:bg-surface-container-low transition-all">
+                        Last 30 days
+                        <span class="material-symbols-outlined">expand_more</span>
+</button>
+<button class="bg-white border border-outline-variant px-3 py-1.5 rounded flex items-center justify-center hover:bg-surface-container-low transition-all">
+<span class="material-symbols-outlined">tune</span>
+</button>
+</div>
+</section>
+<!-- Grid Layout -->
+<div class="grid grid-cols-12 gap-gutter">
+<!-- AI Summary Card -->
+<div class="col-span-12 lg:col-span-8 bg-white border border-outline-variant border-l-4 border-l-primary p-6 rounded relative overflow-hidden group">
+
+<div class="relative z-10">
+<div class="flex items-center gap-2 mb-4">
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">auto_awesome</span>
+<span class="bg-primary-container/10 text-primary-container px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider">Phi-4 summary</span>
+</div>
+<p class="text-headline-md font-medium leading-relaxed mb-6">
+                            Team health has declined significantly this month due to a spike in PR review times and a decrease in commit frequency. Focus on unblocking the code review pipeline.
+                        </p>
+<div class="flex flex-wrap gap-2 mb-6">
+<span class="px-3 py-1 bg-surface-container border border-outline-variant rounded-full text-body-sm hover:bg-primary hover:text-white transition-all cursor-pointer">Review bottlenecks</span>
+<span class="px-3 py-1 bg-surface-container border border-outline-variant rounded-full text-body-sm hover:bg-primary hover:text-white transition-all cursor-pointer">Team velocity</span>
+<span class="px-3 py-1 bg-surface-container border border-outline-variant rounded-full text-body-sm hover:bg-primary hover:text-white transition-all cursor-pointer">Anomaly details</span>
+</div>
+<div class="relative max-w-lg">
+<input class="w-full bg-surface border border-outline-variant rounded-lg pl-4 pr-12 py-3 focus:ring-2 focus:ring-primary focus:border-transparent outline-none text-body-sm" placeholder="Ask about this team..." type="text"/>
+<button class="absolute right-3 top-1/2 -translate-y-1/2 text-primary hover:scale-110 transition-transform">
+<span class="material-symbols-outlined">send</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Bus-factor Risk Card -->
+<div class="col-span-12 lg:col-span-4 bg-white border border-outline-variant p-6 rounded">
+<div class="flex justify-between items-start mb-6">
+<h3 class="font-title-sm text-title-sm">Bus-factor Risk</h3>
+<span class="material-symbols-outlined text-outline">info</span>
+</div>
+<div class="space-y-5">
+<div>
+<div class="flex justify-between mb-2">
+<span class="text-body-sm font-semibold">Data plane</span>
+<span class="text-body-sm text-tertiary">Medium risk</span>
+</div>
+<div class="w-full bg-surface-container rounded-full h-2">
+<div class="bg-tertiary h-2 rounded-full" style="width: 45%"></div>
+</div>
+</div>
+<div>
+<div class="flex justify-between mb-2">
+<span class="text-body-sm font-semibold">Control plane</span>
+<span class="text-body-sm text-error">High risk</span>
+</div>
+<div class="w-full bg-surface-container rounded-full h-2">
+<div class="bg-error h-2 rounded-full" style="width: 12%"></div>
+</div>
+</div>
+<div>
+<div class="flex justify-between mb-2">
+<span class="text-body-sm font-semibold">SDK</span>
+<span class="text-body-sm text-emerald-600">Low risk</span>
+</div>
+<div class="w-full bg-surface-container rounded-full h-2">
+<div class="bg-emerald-500 h-2 rounded-full" style="width: 85%"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- Metrics Row -->
+<div class="col-span-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-gutter">
+<div class="bg-white border border-outline-variant p-5 rounded hover:border-primary transition-colors cursor-default group">
+<p class="text-secondary text-body-sm mb-1">Commit activity</p>
+<div class="flex items-end justify-between">
+<span class="text-display-lg font-display-lg">38/wk</span>
+<span class="bg-error-container text-on-error-container px-2 py-0.5 rounded text-xs font-bold flex items-center">
+<span class="material-symbols-outlined text-[14px]">arrow_downward</span>
+                                60%
+                            </span>
+</div>
+</div>
+<div class="bg-white border border-outline-variant p-5 rounded hover:border-primary transition-colors cursor-default group">
+<p class="text-secondary text-body-sm mb-1">Push frequency</p>
+<div class="flex items-end justify-between">
+<span class="text-display-lg font-display-lg">9/wk</span>
+<span class="bg-error-container text-on-error-container px-2 py-0.5 rounded text-xs font-bold flex items-center">
+<span class="material-symbols-outlined text-[14px]">arrow_downward</span>
+                                35%
+                            </span>
+</div>
+</div>
+<div class="bg-white border border-outline-variant p-5 rounded hover:border-primary transition-colors cursor-default group">
+<p class="text-secondary text-body-sm mb-1">PR review time</p>
+<div class="flex items-end justify-between">
+<span class="text-display-lg font-display-lg">4.2d</span>
+<span class="bg-tertiary-fixed text-on-tertiary-fixed-variant px-2 py-0.5 rounded text-xs font-bold flex items-center">
+<span class="material-symbols-outlined text-[14px]">arrow_upward</span>
+                                280%
+                            </span>
+</div>
+</div>
+<div class="bg-white border border-outline-variant p-5 rounded hover:border-primary transition-colors cursor-default group">
+<p class="text-secondary text-body-sm mb-1">On-goal commits</p>
+<div class="flex items-end justify-between">
+<span class="text-display-lg font-display-lg">64%</span>
+<span class="bg-tertiary-fixed text-on-tertiary-fixed-variant px-2 py-0.5 rounded text-xs font-bold flex items-center">
+                                Goal: 80%
+                            </span>
+</div>
+</div>
+</div>
+<!-- Line Chart Card -->
+<div class="col-span-12 lg:col-span-7 bg-white border border-outline-variant p-6 rounded">
+<div class="flex justify-between items-center mb-6">
+<h3 class="font-title-sm text-title-sm">PR review time · last 30 days</h3>
+<div class="flex items-center gap-4">
+<div class="flex items-center gap-1.5">
+<div class="w-2.5 h-2.5 rounded-full bg-primary"></div>
+<span class="text-body-sm">Current</span>
+</div>
+<div class="flex items-center gap-1.5">
+<div class="w-2.5 h-0.5 bg-outline opacity-40"></div>
+<span class="text-body-sm text-secondary">Baseline</span>
+</div>
+</div>
+</div>
+<div class="h-64 relative flex items-end justify-between px-2 pt-4">
+<!-- Simulated Chart -->
+<div class="absolute inset-0 flex flex-col justify-between pt-4 pointer-events-none opacity-20">
+<div class="border-t border-outline-variant w-full h-0"></div>
+<div class="border-t border-outline-variant w-full h-0"></div>
+<div class="border-t border-outline-variant w-full h-0"></div>
+<div class="border-t border-outline-variant w-full h-0"></div>
+</div>
+<svg class="w-full h-full overflow-visible" preserveaspectratio="none" viewbox="0 0 1000 100">
+<!-- Baseline -->
+<line stroke="#717783" stroke-dasharray="4,4" stroke-width="1" x1="0" x2="1000" y1="80" y2="80"></line>
+<!-- Line -->
+<path d="M 0 85 Q 100 82, 200 88 T 400 70 T 600 50 T 800 20 L 1000 5" fill="none" stroke="#005faa" stroke-linecap="round" stroke-width="3"></path>
+<circle cx="1000" cy="5" fill="#ba1a1a" r="5"></circle>
+</svg>
+</div>
+<div class="flex justify-between mt-4 px-2 text-body-sm text-secondary">
+<span>Jan 1</span>
+<span>Jan 10</span>
+<span>Jan 20</span>
+<span>Today</span>
+</div>
+</div>
+<!-- Active Anomalies Card -->
+<div class="col-span-12 lg:col-span-5 bg-white border border-outline-variant p-6 rounded">
+<h3 class="font-title-sm text-title-sm mb-6">Active Anomalies</h3>
+<div class="space-y-4">
+<div class="p-4 bg-error-container/5 border border-error/10 rounded flex gap-4">
+<div class="w-2 h-2 rounded-full bg-error mt-1.5 flex-shrink-0 animate-pulse"></div>
+<div class="flex-1">
+<div class="flex justify-between items-start mb-1">
+<h4 class="font-semibold text-body-md">Critical PR Latency</h4>
+<span class="text-body-sm text-secondary">2h ago</span>
+</div>
+<p class="text-body-sm text-on-surface-variant">15+ PRs waiting &gt; 5 days. Average response time increased from 1.2d to 4.2d.</p>
+<button class="mt-3 text-primary font-semibold text-body-sm hover:underline">View details</button>
+</div>
+</div>
+<div class="p-4 bg-tertiary-fixed/10 border border-tertiary/10 rounded flex gap-4">
+<div class="w-2 h-2 rounded-full bg-tertiary mt-1.5 flex-shrink-0"></div>
+<div class="flex-1">
+<div class="flex justify-between items-start mb-1">
+<h4 class="font-semibold text-body-md">Velocity Drop</h4>
+<span class="text-body-sm text-secondary">5h ago</span>
+</div>
+<p class="text-body-sm text-on-surface-variant">40% decrease in merge rate. PR inflow remains constant while merge rate stalls.</p>
+<button class="mt-3 text-primary font-semibold text-body-sm hover:underline">Investigate</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Team Members Card -->
+<div class="col-span-12 bg-white border border-outline-variant rounded overflow-hidden">
+<div class="p-6 border-b border-outline-variant bg-surface-container-lowest flex justify-between items-center">
+<h3 class="font-title-sm text-title-sm">Team Members</h3>
+<div class="flex gap-2">
+<button class="px-3 py-1 rounded text-body-sm bg-surface-container-high font-semibold">Active (12)</button>
+<button class="px-3 py-1 rounded text-body-sm text-secondary hover:bg-surface-container-low">All contributors</button>
+</div>
+</div>
+<table class="w-full text-left">
+<thead class="bg-surface text-secondary font-label-uppercase text-label-uppercase">
+<tr>
+<th class="px-6 py-3 font-semibold">Engineer</th>
+<th class="px-6 py-3 font-semibold">Role</th>
+<th class="px-6 py-3 font-semibold text-right">Commits/wk</th>
+<th class="px-6 py-3 font-semibold text-right">Reviews/wk</th>
+<th class="px-6 py-3 font-semibold text-right">On-goal %</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant">
+<tr class="hover:bg-surface-container-lowest transition-colors">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-primary-fixed text-on-primary-fixed flex items-center justify-center font-bold text-xs">SK</div>
+<span class="font-semibold">Sarah Kim</span>
+</div>
+</td>
+<td class="px-6 py-4 text-secondary">Principal Software Eng.</td>
+<td class="px-6 py-4 text-right">12</td>
+<td class="px-6 py-4 text-right">24</td>
+<td class="px-6 py-4 text-right">
+<span class="text-emerald-600 font-bold">92%</span>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-lowest transition-colors">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-secondary-fixed text-on-secondary-fixed flex items-center justify-center font-bold text-xs">RJ</div>
+<span class="font-semibold">Rahul Jha</span>
+</div>
+</td>
+<td class="px-6 py-4 text-secondary">Senior Engineer II</td>
+<td class="px-6 py-4 text-right">4</td>
+<td class="px-6 py-4 text-right">3</td>
+<td class="px-6 py-4 text-right">
+<span class="text-tertiary font-bold">45%</span>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-lowest transition-colors">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-tertiary-fixed text-on-tertiary-fixed flex items-center justify-center font-bold text-xs">AM</div>
+<span class="font-semibold">Alice Moreno</span>
+</div>
+</td>
+<td class="px-6 py-4 text-secondary">Software Engineer II</td>
+<td class="px-6 py-4 text-right">8</td>
+<td class="px-6 py-4 text-right">14</td>
+<td class="px-6 py-4 text-right">
+<span class="text-emerald-600 font-bold">78%</span>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-lowest transition-colors">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-primary-fixed text-on-primary-fixed flex items-center justify-center font-bold text-xs">TY</div>
+<span class="font-semibold">Tim Yang</span>
+</div>
+</td>
+<td class="px-6 py-4 text-secondary">Senior Engineer I</td>
+<td class="px-6 py-4 text-right">2</td>
+<td class="px-6 py-4 text-right">2</td>
+<td class="px-6 py-4 text-right">
+<span class="text-error font-bold">18%</span>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="p-4 bg-surface-container-lowest border-t border-outline-variant flex justify-center">
+<button class="text-primary font-semibold text-body-sm hover:underline">View all 12 members</button>
+</div>
+</div>
+</div>
+</div>
+</main>
+<script>
+        // Micro-interactions and simple state management
+        document.querySelectorAll('.metric-card').forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                card.classList.add('scale-[1.02]');
+            });
+            card.addEventListener('mouseleave', () => {
+                card.classList.remove('scale-[1.02]');
+            });
+        });
+
+        // Search bar focus effect
+        const searchInput = document.querySelector('input[placeholder="Search teams or repos..."]');
+        searchInput?.addEventListener('focus', () => {
+            searchInput.parentElement.classList.add('border-primary', 'shadow-sm');
+        });
+        searchInput?.addEventListener('blur', () => {
+            searchInput.parentElement.classList.remove('border-primary', 'shadow-sm');
+        });
+    </script>
+</body></html>

@@ -1,69 +1,89 @@
-// "Team members" card: initials avatar, name and role, commit/review/on-goal stats, and activity status.
-import { Card } from "@/components/ui/Card";
+"use client";
+
+import { useState } from "react";
+import { Avatar } from "@/components/ui/Avatar";
+import { FluentCard } from "@/components/ui/FluentCard";
 import { cn } from "@/lib/cn";
-import type { MemberActivityStatus, TeamMember } from "@/lib/types";
+import type { TeamMember } from "@/lib/types";
 
 export interface TeamMembersCardProps {
   members: TeamMember[];
   className?: string;
 }
 
-const ACTIVITY_DOT_CLASSES: Record<MemberActivityStatus, string> = {
-  active: "bg-state-success",
-  away: "bg-state-warning",
-  offline: "bg-neutral-tertiary",
-};
-
-const ACTIVITY_LABEL: Record<MemberActivityStatus, string> = {
-  active: "Active",
-  away: "Away",
-  offline: "Offline",
-};
+function onGoalTextClass(onGoalRate: number) {
+  if (onGoalRate >= 70) return "text-emerald-600";
+  if (onGoalRate >= 40) return "text-tertiary";
+  return "text-error";
+}
 
 export function TeamMembersCard({ members, className }: TeamMembersCardProps) {
-  return (
-    <Card className={cn("p-4 sm:p-5", className)}>
-      <h2 className="text-sm font-semibold text-neutral-primary">
-        Team members
-      </h2>
-      <ul className="mt-4 flex flex-col divide-y divide-neutral-light">
-        {members.map((member) => (
-          <li
-            key={member.id}
-            className="flex flex-wrap items-center justify-between gap-3 py-3 first:pt-0 last:pb-0"
-          >
-            <div className="flex min-w-0 items-center gap-3">
-              <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-brand-tint text-xs font-semibold text-brand">
-                {member.initials}
-              </span>
-              <div className="min-w-0">
-                <p className="truncate text-sm font-medium text-neutral-primary">
-                  {member.name}
-                </p>
-                <p className="truncate text-xs text-neutral-tertiary">
-                  {member.role}
-                </p>
-              </div>
-            </div>
+  const [showAll, setShowAll] = useState(false);
+  const visibleMembers = showAll ? members : members.slice(0, 4);
 
-            <div className="flex items-center gap-4 text-xs text-neutral-secondary">
-              <span>{member.commitsPerWeek} commits/wk</span>
-              <span>{member.avgReviewTimeDays}d review</span>
-              <span>{member.onGoalRate}% on goal</span>
-              <span className="inline-flex items-center gap-1.5">
-                <span
-                  aria-hidden="true"
-                  className={cn(
-                    "size-2 rounded-full",
-                    ACTIVITY_DOT_CLASSES[member.activityStatus],
-                  )}
-                />
-                {ACTIVITY_LABEL[member.activityStatus]}
-              </span>
-            </div>
-          </li>
-        ))}
-      </ul>
-    </Card>
+  return (
+    <FluentCard className={cn("overflow-hidden", className)}>
+      <div className="flex items-center justify-between border-b border-outline-variant bg-surface-container-lowest p-6">
+        <h3 className="font-title-sm text-title-sm">Team Members</h3>
+        <div className="flex gap-2">
+          <button
+            type="button"
+            className="rounded bg-surface-container-high px-3 py-1 text-body-sm font-semibold"
+          >
+            Active ({members.length})
+          </button>
+          <button
+            type="button"
+            className="rounded px-3 py-1 text-body-sm text-secondary hover:bg-surface-container-low"
+          >
+            All contributors
+          </button>
+        </div>
+      </div>
+
+      <table className="w-full text-left">
+        <thead className="bg-surface font-label-uppercase text-label-uppercase text-secondary">
+          <tr>
+            <th className="px-6 py-3 font-semibold">Engineer</th>
+            <th className="px-6 py-3 font-semibold">Role</th>
+            <th className="px-6 py-3 text-right font-semibold">Commits/wk</th>
+            <th className="px-6 py-3 text-right font-semibold">Reviews/wk</th>
+            <th className="px-6 py-3 text-right font-semibold">On-goal %</th>
+          </tr>
+        </thead>
+        <tbody className="divide-y divide-outline-variant">
+          {visibleMembers.map((member) => (
+            <tr key={member.id} className="transition-colors hover:bg-surface-container-lowest">
+              <td className="px-6 py-4">
+                <div className="flex items-center gap-3">
+                  <Avatar name={member.name} size={32} />
+                  <span className="font-semibold">{member.name}</span>
+                </div>
+              </td>
+              <td className="px-6 py-4 text-secondary">{member.role}</td>
+              <td className="px-6 py-4 text-right">{member.commitsPerWeek}</td>
+              <td className="px-6 py-4 text-right">{member.reviewsPerWeek}</td>
+              <td className="px-6 py-4 text-right">
+                <span className={cn("font-bold", onGoalTextClass(member.onGoalRate))}>
+                  {member.onGoalRate}%
+                </span>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+
+      {!showAll && members.length > visibleMembers.length && (
+        <div className="flex justify-center border-t border-outline-variant bg-surface-container-lowest p-4">
+          <button
+            type="button"
+            onClick={() => setShowAll(true)}
+            className="text-body-sm font-semibold text-primary hover:underline"
+          >
+            View all {members.length} members
+          </button>
+        </div>
+      )}
+    </FluentCard>
   );
 }

@@ -1,0 +1,207 @@
+<!-- Watchtower Sign-in -->
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Sign In - Watchtower</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "primary-fixed": "#d3e3ff",
+                    "surface-variant": "#e6e2e0",
+                    "surface-container-lowest": "#ffffff",
+                    "on-tertiary-fixed": "#311300",
+                    "surface": "#fdf8f6",
+                    "on-background": "#1c1b1b",
+                    "surface-dim": "#ddd9d7",
+                    "surface-container": "#f1edeb",
+                    "on-secondary-fixed-variant": "#00497d",
+                    "inverse-on-surface": "#f4f0ee",
+                    "surface-tint": "#0060ab",
+                    "on-primary-fixed": "#001c39",
+                    "primary-fixed-dim": "#a3c9ff",
+                    "secondary-fixed": "#d1e4ff",
+                    "tertiary-fixed-dim": "#ffb689",
+                    "on-tertiary": "#ffffff",
+                    "tertiary-container": "#bc5b00",
+                    "secondary": "#0061a3",
+                    "on-error": "#ffffff",
+                    "on-primary": "#ffffff",
+                    "surface-container-highest": "#e6e2e0",
+                    "inverse-primary": "#a3c9ff",
+                    "tertiary": "#974700",
+                    "on-error-container": "#93000a",
+                    "on-surface": "#1c1b1b",
+                    "secondary-fixed-dim": "#9ecaff",
+                    "on-secondary-container": "#003f6d",
+                    "on-secondary-fixed": "#001d36",
+                    "error-container": "#ffdad6",
+                    "primary-container": "#0078d4",
+                    "tertiary-fixed": "#ffdbc8",
+                    "on-primary-fixed-variant": "#004883",
+                    "surface-container-high": "#ebe7e5",
+                    "background": "#FAF9F8", /* Overridden per prompt */
+                    "surface-container-low": "#f7f3f1",
+                    "primary": "#005faa",
+                    "on-primary-container": "#ffffff",
+                    "inverse-surface": "#31302f",
+                    "on-tertiary-fixed-variant": "#743500",
+                    "on-secondary": "#ffffff",
+                    "outline": "#717783",
+                    "surface-bright": "#fdf8f6",
+                    "on-surface-variant": "#404752",
+                    "on-tertiary-container": "#ffffff",
+                    "error": "#ba1a1a",
+                    "outline-variant": "#EDEBE9", /* Custom border color per prompt */
+                    "secondary-container": "#5badff"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "spacing": {
+                    "margin-desktop": "40px",
+                    "gutter": "16px",
+                    "xl": "32px",
+                    "md": "16px",
+                    "lg": "24px",
+                    "sm": "8px",
+                    "xs": "4px",
+                    "margin-mobile": "16px",
+                    "base": "4px"
+            },
+            "fontFamily": {
+                    "headline-lg-mobile": ["Inter"],
+                    "display-lg": ["Inter"],
+                    "body-md": ["Inter"],
+                    "body-lg": ["Inter"],
+                    "label-md": ["Inter"],
+                    "headline-sm": ["Inter"],
+                    "headline-md": ["Inter"],
+                    "headline-lg": ["Inter"],
+                    "fluent": ["Segoe UI", "Inter", "sans-serif"]
+            },
+            "fontSize": {
+                    "headline-lg-mobile": ["28px", {"lineHeight": "36px", "fontWeight": "600"}],
+                    "display-lg": ["42px", {"lineHeight": "52px", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+                    "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                    "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "500"}],
+                    "headline-sm": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "600"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body {
+            background-color: #FAF9F8;
+            font-family: 'Inter', sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+        .fluent-card {
+            box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+            border: 1px solid #EDEBE9;
+            transition: box-shadow 0.3s ease;
+        }
+        .fluent-card:hover {
+            box-shadow: 0 8px 16px rgba(0,0,0,0.08);
+        }
+        .microsoft-logo {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 2px;
+            width: 16px;
+            height: 16px;
+        }
+        .ms-square { width: 7px; height: 7px; }
+        .ms-red { background-color: #f25022; }
+        .ms-green { background-color: #7fbb00; }
+        .ms-blue { background-color: #00a4ef; }
+        .ms-yellow { background-color: #ffb900; }
+
+        /* Microsoft Fluent Font specifics */
+        .font-fluent {
+            font-family: 'Segoe UI', 'Inter', sans-serif;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-center items-center overflow-hidden">
+<!-- Main Content Canvas -->
+<main class="flex-grow flex flex-col items-center justify-center w-full px-margin-mobile md:px-margin-desktop">
+<!-- Center Auth Card -->
+<div class="fluent-card bg-white p-lg md:p-xl w-full max-w-[440px] rounded-lg flex flex-col items-center animate-in fade-in slide-in-from-bottom-4 duration-700">
+<!-- Logo Section -->
+<div class="mb-lg">
+<img alt="Watchtower Logo" class="w-12 h-12 object-contain filter grayscale opacity-90" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCScizo6_vEbojlop0dgWZw5GFpwPIwVSHc9F5zMMnZSF4nL2trIjvISJrxxLZO-PYeph7pe2eFpJzBqAZ-uqlySXD2c5GRMfJBbzAKbp8oFyKRmnVZz6HiOBgOrdmatyp8FaHDtQ6EbPGtJtnqxtRD1S4eo-uFGnyg2HhUMZIoQY29DKUzpHWkL-ofFlVFpyrHavdGnNFuUapi3Zd3-9L5weY-RjEUr04vMEcEhzSX1TRJljTmSPB1VP24xKeMGuYix2jnlPpJ53M"/>
+</div>
+<!-- Identity Section -->
+<div class="text-center mb-xl">
+<h1 class="font-fluent text-headline-md font-semibold text-[#323130] tracking-tight">
+                    Watchtower
+                </h1>
+<p class="font-body-md text-[#605E5C] mt-xs">
+                    Engineering team health, watched by local AI
+                </p>
+</div>
+<!-- Action Section -->
+<div class="w-full">
+<button class="w-full bg-[#0078D4] hover:bg-[#106EBE] active:bg-[#005A9E] text-white flex items-center justify-center gap-md py-sm px-lg rounded-lg font-body-md font-semibold transition-all duration-200 focus:ring-2 focus:ring-[#0078D4] focus:ring-offset-2 outline-none">
+<div class="microsoft-logo">
+<div class="ms-square ms-red"></div>
+<div class="ms-square ms-green"></div>
+<div class="ms-square ms-blue"></div>
+<div class="ms-square ms-yellow"></div>
+</div>
+                    Sign in with Microsoft
+                </button>
+</div>
+<!-- Support/Help context -->
+<div class="mt-lg pt-lg border-t border-[#EDEBE9] w-full text-center">
+<a class="font-label-md text-primary hover:underline transition-all" href="#">
+                    Trouble signing in?
+                </a>
+</div>
+</div>
+</main>
+<!-- Footer Identity -->
+<footer class="w-full py-xl flex justify-center items-center">
+<p class="font-label-md text-[#605E5C] tracking-wide uppercase opacity-80">
+            Internal tool · access limited to your org
+        </p>
+</footer>
+<!-- Atmosphere Micro-interaction script -->
+<script>
+        document.addEventListener('mousemove', (e) => {
+            const x = e.clientX / window.innerWidth;
+            const y = e.clientY / window.innerHeight;
+
+            // Subtle parallax or shadow movement could go here
+            // Keeping it minimal as per Fluent design principles
+        });
+
+        // Simple button click effect
+        const btn = document.querySelector('button');
+        btn.addEventListener('click', function(e) {
+            let x = e.clientX - e.target.offsetLeft;
+            let y = e.clientY - e.target.offsetTop;
+
+            let ripple = document.createElement('span');
+            ripple.style.left = x + 'px';
+            ripple.style.top = y + 'px';
+            // Logic for ripple effect if desired, but Fluent prefers standard states
+        });
+    </script>
+</body></html>
