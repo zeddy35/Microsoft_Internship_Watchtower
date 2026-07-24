@@ -1,7 +1,7 @@
 "use client";
 
-import { IconLoader2, IconSend2, IconSparkles } from "@tabler/icons-react";
 import { useState, type FormEvent } from "react";
+import { Icon } from "@/components/ui/Icon";
 import { cn } from "@/lib/cn";
 
 export interface Phi4SummaryProps {
@@ -35,46 +35,35 @@ export function Phi4Summary({
   }
 
   return (
-    <section
+    <div
       className={cn(
-        "rounded-card border border-l-4 border-neutral-light border-l-brand bg-neutral-white p-4 shadow-card sm:p-5",
+        "rounded border border-l-4 border-outline-variant border-l-primary bg-white p-6",
         className,
       )}
     >
-      <div className="flex items-center justify-between gap-3">
-        <span className="inline-flex items-center gap-1.5 rounded-full bg-brand-tint px-2.5 py-1 text-xs font-medium text-brand">
-          <IconSparkles className="size-3.5" stroke={1.75} aria-hidden="true" />
+      <div className="mb-4 flex items-center gap-2">
+        <Icon name="auto_awesome" filled className="text-primary" />
+        <span className="rounded bg-primary-container/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-primary-container">
           Phi-4 summary
         </span>
-
         {isStreaming && (
-          <span
-            role="status"
-            className="inline-flex items-center gap-1.5 text-xs text-neutral-tertiary"
-          >
-            <IconLoader2
-              className="size-3.5 animate-spin"
-              stroke={1.75}
-              aria-hidden="true"
-            />
-            Phi-4 is thinking
+          <span role="status" className="text-body-sm text-secondary">
+            Phi-4 is thinking…
           </span>
         )}
       </div>
 
-      <p className="mt-3 text-sm leading-relaxed text-neutral-primary">
-        {summary}
-      </p>
+      <p className="mb-6 text-headline-md font-medium leading-relaxed">{summary}</p>
 
       {suggestions.length > 0 && (
-        <div className="mt-4 flex flex-wrap gap-2">
+        <div className="mb-6 flex flex-wrap gap-2">
           {suggestions.map((suggestion) => (
             <button
               key={suggestion}
               type="button"
               onClick={() => handleChipClick(suggestion)}
               disabled={isStreaming}
-              className="rounded-control border border-neutral-light bg-neutral-lighter-alt px-3 py-1.5 text-xs font-medium text-neutral-secondary transition-colors hover:border-brand-light hover:bg-brand-tint hover:text-brand disabled:cursor-not-allowed disabled:opacity-60"
+              className="cursor-pointer rounded-full border border-outline-variant bg-surface-container px-3 py-1 text-body-sm transition-all hover:bg-primary hover:text-white disabled:cursor-not-allowed disabled:opacity-60"
             >
               {suggestion}
             </button>
@@ -82,24 +71,24 @@ export function Phi4Summary({
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="mt-4 flex items-center gap-2">
+      <form onSubmit={handleSubmit} className="relative max-w-lg">
         <input
           type="text"
           value={question}
           onChange={(event) => setQuestion(event.target.value)}
-          placeholder="Ask about this team"
+          placeholder="Ask about this team..."
           disabled={isStreaming}
-          className="flex-1 rounded-control border border-neutral-light bg-neutral-white px-3 py-2 text-sm text-neutral-primary placeholder:text-neutral-tertiary focus:border-brand focus:outline-none focus:ring-1 focus:ring-brand disabled:cursor-not-allowed disabled:bg-neutral-lighter-alt"
+          className="w-full rounded-lg border border-outline-variant bg-surface py-3 pl-4 pr-12 text-body-sm outline-none focus:border-transparent focus:ring-2 focus:ring-primary disabled:opacity-60"
         />
         <button
           type="submit"
           disabled={isStreaming || question.trim().length === 0}
           aria-label="Send question"
-          className="flex size-9 shrink-0 items-center justify-center rounded-control bg-brand text-neutral-white transition-colors hover:bg-brand-hover disabled:cursor-not-allowed disabled:bg-neutral-tertiary-alt"
+          className="absolute right-3 top-1/2 -translate-y-1/2 text-primary transition-transform hover:scale-110 disabled:cursor-not-allowed disabled:opacity-40"
         >
-          <IconSend2 className="size-4" stroke={1.75} aria-hidden="true" />
+          <Icon name="send" />
         </button>
       </form>
-    </section>
+    </div>
   );
 }

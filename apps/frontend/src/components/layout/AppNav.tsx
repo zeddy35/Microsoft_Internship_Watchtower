@@ -1,56 +1,62 @@
 "use client";
 
-import {
-  IconAlertTriangle,
-  IconChevronsLeft,
-  IconChevronsRight,
-  IconLayoutDashboard,
-  IconMail,
-  IconSettings,
-  IconTower,
-  IconUsersGroup,
-} from "@tabler/icons-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState, type ComponentType } from "react";
+import { useState } from "react";
+import { Icon } from "@/components/ui/Icon";
 import { cn } from "@/lib/cn";
 
 type NavItem = {
   label: string;
   href: string;
-  icon: ComponentType<{ className?: string; stroke?: number }>;
+  icon: string;
+  isActive: (pathname: string) => boolean;
 };
 
 const NAV_ITEMS: NavItem[] = [
-  { label: "Overview", href: "/", icon: IconLayoutDashboard },
-  { label: "Teams", href: "/teams", icon: IconUsersGroup },
-  { label: "Anomalies", href: "/anomalies", icon: IconAlertTriangle },
-  { label: "Weekly digest", href: "/digest", icon: IconMail },
-  { label: "Settings", href: "/settings", icon: IconSettings },
+  {
+    label: "Overview",
+    href: "/overview",
+    icon: "dashboard",
+    isActive: (pathname) => pathname === "/overview",
+  },
+  {
+    label: "Teams",
+    href: "/",
+    icon: "groups",
+    isActive: (pathname) => pathname === "/" || pathname.startsWith("/teams"),
+  },
+  {
+    label: "Anomalies",
+    href: "/anomalies",
+    icon: "warning",
+    isActive: (pathname) => pathname === "/anomalies",
+  },
+  {
+    label: "Weekly digest",
+    href: "/digest",
+    icon: "summarize",
+    isActive: (pathname) => pathname === "/digest",
+  },
+  {
+    label: "Settings",
+    href: "/settings",
+    icon: "settings",
+    isActive: (pathname) => pathname === "/settings",
+  },
 ];
 
-type TeamStatus = "success" | "warning" | "error" | "neutral";
-
-type Team = {
+type FavoriteTeam = {
   id: string;
   name: string;
-  status: TeamStatus;
+  dotClassName: string;
 };
 
-const TEAMS: Team[] = [
-  { id: "growth", name: "Growth", status: "success" },
-  { id: "platform", name: "Platform", status: "success" },
-  { id: "data", name: "Data", status: "warning" },
-  { id: "payments", name: "Payments", status: "error" },
-  { id: "mobile", name: "Mobile", status: "neutral" },
+const FAVORITE_TEAMS: FavoriteTeam[] = [
+  { id: "azure-core-networking", name: "Azure Core Networking", dotClassName: "bg-tertiary" },
+  { id: "global-wan", name: "Global WAN", dotClassName: "bg-emerald-500" },
+  { id: "edge-services", name: "Edge Services", dotClassName: "bg-error" },
 ];
-
-const STATUS_DOT_CLASSES: Record<TeamStatus, string> = {
-  success: "bg-state-success",
-  warning: "bg-state-warning",
-  error: "bg-state-error",
-  neutral: "bg-neutral-tertiary",
-};
 
 export function AppNav() {
   const [collapsed, setCollapsed] = useState(false);
@@ -60,105 +66,117 @@ export function AppNav() {
     <nav
       aria-label="Primary"
       className={cn(
-        "flex h-full shrink-0 flex-col border-r border-neutral-light bg-neutral-white transition-[width] duration-200",
-        collapsed ? "w-[52px]" : "w-[200px]",
+        "flex h-screen shrink-0 flex-col border-r border-outline-variant bg-surface transition-[width] duration-200",
+        collapsed ? "w-14" : "w-nav_rail_width",
       )}
     >
-      <div
-        className={cn(
-          "flex items-center gap-2 border-b border-neutral-light px-3 py-3",
-          collapsed ? "flex-col justify-center" : "justify-between",
-        )}
-      >
-        <Link
-          href="/"
-          className={cn(
-            "flex items-center gap-2 overflow-hidden",
-            collapsed && "justify-center",
-          )}
-        >
-          <IconTower
-            className="size-5 shrink-0 text-brand"
-            stroke={1.75}
-            aria-hidden="true"
-          />
+      <div className={cn("flex items-center gap-3 p-6", collapsed && "justify-center px-2")}>
+        <Link href="/" className="flex items-center gap-3 overflow-hidden">
+          <div className="flex size-8 shrink-0 items-center justify-center rounded bg-primary text-white">
+            <Icon name="castle" filled size={20} />
+          </div>
           {!collapsed && (
-            <span className="truncate text-sm font-semibold text-neutral-primary">
+            <span className="truncate font-headline-md text-headline-md font-bold text-primary">
               Watchtower
             </span>
           )}
         </Link>
-
-        <button
-          type="button"
-          onClick={() => setCollapsed((prev) => !prev)}
-          aria-label={collapsed ? "Expand navigation" : "Collapse navigation"}
-          aria-pressed={collapsed}
-          className="flex size-6 shrink-0 items-center justify-center rounded-control text-neutral-secondary transition-colors hover:bg-neutral-lighter hover:text-neutral-primary"
-        >
-          {collapsed ? (
-            <IconChevronsRight className="size-4" stroke={1.75} />
-          ) : (
-            <IconChevronsLeft className="size-4" stroke={1.75} />
-          )}
-        </button>
       </div>
 
-      <ul className="flex flex-1 flex-col gap-0.5 overflow-y-auto px-2 py-3">
+      {!collapsed && (
+        <div className="flex justify-end px-4">
+          <button
+            type="button"
+            onClick={() => setCollapsed(true)}
+            aria-label="Collapse navigation"
+            aria-pressed={false}
+            className="flex size-6 items-center justify-center rounded text-secondary hover:bg-surface-container-low hover:text-primary"
+          >
+            <Icon name="chevron_left" size={18} />
+          </button>
+        </div>
+      )}
+      {collapsed && (
+        <div className="flex justify-center px-2">
+          <button
+            type="button"
+            onClick={() => setCollapsed(false)}
+            aria-label="Expand navigation"
+            aria-pressed={true}
+            className="flex size-6 items-center justify-center rounded text-secondary hover:bg-surface-container-low hover:text-primary"
+          >
+            <Icon name="chevron_right" size={18} />
+          </button>
+        </div>
+      )}
+
+      <div className="mt-4 flex-1 space-y-1 px-3">
         {NAV_ITEMS.map((item) => {
-          const active = pathname === item.href;
-          const Icon = item.icon;
+          const active = item.isActive(pathname);
 
           return (
-            <li key={item.href}>
-              <Link
-                href={item.href}
-                title={collapsed ? item.label : undefined}
-                aria-current={active ? "page" : undefined}
-                className={cn(
-                  "flex items-center gap-2.5 rounded-control px-2.5 py-2 text-sm transition-colors",
-                  collapsed && "justify-center px-0",
-                  active
-                    ? "bg-brand-tint font-medium text-brand"
-                    : "text-neutral-secondary hover:bg-neutral-lighter hover:text-neutral-primary",
-                )}
-              >
-                <Icon className="size-[18px] shrink-0" stroke={1.75} />
-                {!collapsed && <span className="truncate">{item.label}</span>}
-              </Link>
-            </li>
+            <Link
+              key={item.href}
+              href={item.href}
+              title={collapsed ? item.label : undefined}
+              aria-current={active ? "page" : undefined}
+              className={cn(
+                "flex items-center gap-3 px-4 py-2 text-secondary transition-colors duration-150",
+                collapsed && "justify-center px-0",
+                active
+                  ? "border-l-4 border-primary bg-secondary-container/30 font-semibold text-primary"
+                  : "hover:bg-secondary-container/10",
+              )}
+            >
+              <Icon name={item.icon} filled={active} />
+              {!collapsed && <span className="font-body-md">{item.label}</span>}
+            </Link>
           );
         })}
-      </ul>
 
-      <div className="border-t border-neutral-light px-2 py-3">
         {!collapsed && (
-          <p className="px-2.5 pb-2 text-xs font-medium text-neutral-tertiary">
-            Teams
-          </p>
+          <div className="px-4 pt-8">
+            <p className="mb-4 font-label-uppercase text-label-uppercase text-outline">
+              Favorite teams
+            </p>
+            <div className="space-y-3">
+              {FAVORITE_TEAMS.map((team) => (
+                <div
+                  key={team.id}
+                  className="group flex cursor-pointer items-center gap-3 opacity-60 hover:opacity-100"
+                >
+                  <div className={cn("size-2 shrink-0 rounded-full", team.dotClassName)} />
+                  <span className="truncate text-body-sm">{team.name}</span>
+                </div>
+              ))}
+            </div>
+          </div>
         )}
-        <ul className="flex flex-col gap-0.5">
-          {TEAMS.map((team) => (
-            <li key={team.id}>
-              <div
-                title={collapsed ? team.name : undefined}
-                className={cn(
-                  "flex items-center gap-2.5 rounded-control px-2.5 py-1.5 text-sm text-neutral-secondary",
-                  collapsed && "justify-center px-0",
-                )}
-              >
-                <span
-                  aria-hidden="true"
-                  className={cn(
-                    "size-2 shrink-0 rounded-full",
-                    STATUS_DOT_CLASSES[team.status],
-                  )}
-                />
-                {!collapsed && <span className="truncate">{team.name}</span>}
-              </div>
-            </li>
-          ))}
-        </ul>
+      </div>
+
+      <div className="space-y-1 border-t border-outline-variant p-4">
+        <Link
+          href="#"
+          title={collapsed ? "Support" : undefined}
+          className={cn(
+            "group flex items-center gap-3 px-4 py-2 text-secondary transition-colors duration-150 hover:bg-secondary-container/10",
+            collapsed && "justify-center px-0",
+          )}
+        >
+          <Icon name="help" />
+          {!collapsed && <span className="font-body-md">Support</span>}
+        </Link>
+        <Link
+          href="#"
+          title={collapsed ? "Account" : undefined}
+          className={cn(
+            "group flex items-center gap-3 px-4 py-2 text-secondary transition-colors duration-150 hover:bg-secondary-container/10",
+            collapsed && "justify-center px-0",
+          )}
+        >
+          <Icon name="account_circle" filled />
+          {!collapsed && <span className="font-body-md">Account</span>}
+        </Link>
       </div>
     </nav>
   );

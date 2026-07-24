@@ -1,7 +1,5 @@
-// Team drill-down header: team name, status pill, subline, and Last 30 days / Export digest actions.
-import { IconChevronDown, IconDownload } from "@tabler/icons-react";
-import { Badge, type BadgeVariant } from "@/components/ui/Badge";
-import { Button } from "@/components/ui/Button";
+import { Icon } from "@/components/ui/Icon";
+import { StatusPill } from "@/components/ui/StatusPill";
 import type { TeamStatus } from "@/lib/types";
 
 export interface TeamHeaderProps {
@@ -12,18 +10,6 @@ export interface TeamHeaderProps {
   healthScore: number;
 }
 
-const STATUS_LABEL: Record<TeamStatus, string> = {
-  healthy: "Healthy",
-  "at-risk": "At risk",
-  critical: "Critical",
-};
-
-const STATUS_BADGE_VARIANT: Record<TeamStatus, BadgeVariant> = {
-  healthy: "success",
-  "at-risk": "warning",
-  critical: "error",
-};
-
 export function TeamHeader({
   name,
   status,
@@ -32,36 +18,34 @@ export function TeamHeader({
   healthScore,
 }: TeamHeaderProps) {
   return (
-    <div className="flex flex-wrap items-start justify-between gap-4">
+    <section className="flex items-end justify-between">
       <div>
-        <div className="flex items-center gap-3">
-          <h1 className="text-2xl font-semibold text-neutral-primary">
-            {name}
-          </h1>
-          <Badge variant={STATUS_BADGE_VARIANT[status]}>
-            {STATUS_LABEL[status]}
-          </Badge>
+        <div className="mb-1 flex items-center gap-3">
+          <h1 className="font-headline-md text-headline-md font-semibold">{name}</h1>
+          <StatusPill status={status} size="md" />
         </div>
-        <p className="mt-1 text-sm text-neutral-secondary">
-          {engineerCount} engineers · {source} · health score {healthScore}
-          /100
+        <p className="text-body-md text-secondary">
+          {engineerCount} engineers · {source} · health score{" "}
+          <span className="font-bold text-tertiary">{healthScore}/100</span>
         </p>
       </div>
 
-      <div className="flex items-center gap-2">
-        <Button variant="secondary">
+      <div className="flex gap-3">
+        <button
+          type="button"
+          className="flex items-center gap-2 rounded border border-outline-variant bg-white px-4 py-1.5 text-body-sm font-semibold transition-all hover:bg-surface-container-low"
+        >
           Last 30 days
-          <IconChevronDown
-            className="size-4"
-            stroke={1.75}
-            aria-hidden="true"
-          />
-        </Button>
-        <Button variant="primary">
-          <IconDownload className="size-4" stroke={1.75} aria-hidden="true" />
-          Export digest
-        </Button>
+          <Icon name="expand_more" />
+        </button>
+        <button
+          type="button"
+          className="flex items-center justify-center rounded border border-outline-variant bg-white px-3 py-1.5 transition-all hover:bg-surface-container-low"
+          aria-label="Tune"
+        >
+          <Icon name="tune" />
+        </button>
       </div>
-    </div>
+    </section>
   );
 }
