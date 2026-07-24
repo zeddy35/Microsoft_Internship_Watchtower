@@ -1,0 +1,10 @@
+# OS
+.DS_Store
+Thumbs.db
+
+# editors
+.vscode/
+.idea/
+
+# Claude Code local settings (personal permission allowlist, not shared config)
+.claude/settings.local.json

@@ -1,0 +1,33 @@
+# --- web framework ---
+fastapi
+uvicorn[standard]
+pydantic>=2
+pydantic-settings
+python-dotenv
+
+# --- data + storage ---
+duckdb
+pandas
+numpy
+scipy
+
+# --- vector store + embeddings ---
+chromadb
+sentence-transformers          # bge-m3 embeddings (multilingual)
+# fastembed                    # lighter ONNX alternative if VRAM is tight
+
+# --- local LLM (OpenAI-compatible: Foundry Local OR Ollama) ---
+openai
+
+# --- data collection ---
+httpx
+PyGithub                       # GitHub REST convenience wrapper
+
+# --- scheduling (periodic collection) ---
+apscheduler
+
+# --- dev + test ---
+pytest
+pytest-asyncio
+ruff
+mypy
