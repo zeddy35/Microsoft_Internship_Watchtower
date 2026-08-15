@@ -19,10 +19,36 @@ from app.scheduler import build_scheduler, startup_pass
 logger = logging.getLogger(__name__)
 
 
+def configure_logging(level: int = logging.INFO) -> None:
+    """Make Watchtower's own logs visible under uvicorn.
+
+    Uvicorn configures handlers for its own loggers and leaves the root logger
+    bare, so without this every logger.info in the app - the scheduler
+    starting, an anomaly pass, a failed Teams post - goes nowhere. Borrowing
+    uvicorn's handler keeps the format consistent instead of printing two
+    different log styles side by side.
+    """
+    app_logger = logging.getLogger("app")
+    if app_logger.handlers:
+        return
+
+    uvicorn_logger = logging.getLogger("uvicorn")
+    if uvicorn_logger.handlers:
+        for handler in uvicorn_logger.handlers:
+            app_logger.addHandler(handler)
+        app_logger.propagate = False
+    elif not logging.getLogger().handlers:
+        # Running outside uvicorn (a script, a test) - basic output is fine.
+        logging.basicConfig(level=level)
+
+    app_logger.setLevel(level)
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     """Open the database, warm derived state, run the background jobs."""
     settings = get_settings()
+    configure_logging()
     get_connection()
 
     scheduler = None

@@ -210,3 +210,27 @@ def test_admin_refresh_runs_without_network_or_model(client):
 
 def test_resolutions_log_is_exposed(client):
     assert client.get("/admin/resolutions").json() == []
+
+
+def test_app_logs_are_visible_under_uvicorn(monkeypatch):
+    """Without this wiring every logger.info in the app goes nowhere."""
+    import logging
+
+    from app.main import configure_logging
+
+    app_logger = logging.getLogger("app")
+    original_handlers = app_logger.handlers[:]
+    original_propagate = app_logger.propagate
+    app_logger.handlers = []
+
+    uvicorn_handler = logging.NullHandler()
+    monkeypatch.setattr(
+        logging.getLogger("uvicorn"), "handlers", [uvicorn_handler], raising=False
+    )
+    try:
+        configure_logging()
+        assert uvicorn_handler in app_logger.handlers
+        assert app_logger.level == logging.INFO
+    finally:
+        app_logger.handlers = original_handlers
+        app_logger.propagate = original_propagate
