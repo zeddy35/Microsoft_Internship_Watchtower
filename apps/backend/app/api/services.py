@@ -33,12 +33,17 @@ from app.core.db import (
     get_rolling_baseline,
     get_summary,
     get_team_repos,
+    list_resolutions,
     list_teams,
 )
 from app.core.schemas import (
     AnomalyOut,
     AnomalySeverity,
     BusFactorAreaOut,
+    DigestOut,
+    DigestResolutionOut,
+    DigestTeamOut,
+    DigestTotalsOut,
     MemberActivityStatus,
     MetricDirection,
     MetricOut,
@@ -469,4 +474,88 @@ def build_summary(
         summary=row.summary,
         suggestions=suggestions,
         generated_at=row.generated_at,
+    )
+
+
+# --- weekly digest ----------------------------------------------------------
+
+DIGEST_PERIOD_DAYS = 7
+
+_STATUS_RANK = {"critical": 0, "at-risk": 1, "healthy": 2}
+
+# Stored metric keys are for the engine; a digest is read by a human.
+_METRIC_LABELS: dict[str, str] = {
+    view.metric: view.label for view in _METRIC_VIEWS
+} | {"stale_prs": "Stale pull requests"}
+
+
+def metric_label(metric: str) -> str:
+    return _METRIC_LABELS.get(metric, metric.replace("_", " ").capitalize())
+
+
+def build_digest(
+    conn: duckdb.DuckDBPyConnection,
+    *,
+    days: int = DIGEST_PERIOD_DAYS,
+    now: datetime | None = None,
+) -> DigestOut:
+    """Compose the weekly digest: what is wrong, what was advised, what cleared.
+
+    The last part is what makes this more than a status list. An anomaly that
+    closed during the period is shown next to the recommendation that was live
+    while it was open, which is the only place in the UI where the whole loop
+    is visible end to end.
+    """
+    now = now or utcnow()
+    period_start = now - timedelta(days=days)
+
+    resolutions_by_team: dict[str, list[DigestResolutionOut]] = {}
+    for row in list_resolutions(conn):
+        if row.resolved_at < period_start:
+            continue
+        resolutions_by_team.setdefault(row.team, []).append(
+            DigestResolutionOut(
+                metric=row.metric,
+                metric_label=metric_label(row.metric),
+                severity=row.severity,
+                action=row.action,
+                outcome=row.outcome,
+                open_days=round(row.open_days, 1),
+                resolved_at=row.resolved_at,
+            )
+        )
+
+    teams: list[DigestTeamOut] = []
+    for team_name in list_teams(conn):
+        team = build_team(conn, team_name, now)
+        summary = build_summary(conn, team_name)
+        teams.append(
+            DigestTeamOut(
+                team_id=team.id,
+                name=team.name,
+                status=team.status,
+                health_score=team.health_score,
+                summary=summary.summary if summary else None,
+                suggestions=summary.suggestions if summary else [],
+                generated_at=summary.generated_at if summary else None,
+                metrics=build_team_metrics(conn, team_name, now).metrics,
+                open_anomalies=build_anomalies(conn, team_name),
+                resolved=resolutions_by_team.get(team_name, []),
+            )
+        )
+
+    # Worst first: a digest is read top-down, so the team in trouble belongs in
+    # front of the reader rather than in alphabetical order.
+    teams.sort(key=lambda t: (_STATUS_RANK.get(t.status, 3), t.health_score))
+
+    return DigestOut(
+        period_start=period_start,
+        period_end=now,
+        totals=DigestTotalsOut(
+            teams=len(teams),
+            needing_attention=sum(1 for t in teams if t.status != "healthy"),
+            open_anomalies=sum(len(t.open_anomalies) for t in teams),
+            resolved_in_period=sum(len(t.resolved) for t in teams),
+        ),
+        teams=teams,
     )

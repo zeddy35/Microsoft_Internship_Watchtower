@@ -132,6 +132,8 @@ then re-run the capture documented in `apps/frontend/README.md`.
 | `GET /teams/{id}/summary` | Cached Phi-4 verdict (404 until one is generated) |
 | `POST /teams/{id}/ask` | Streams a grounded Phi-4 answer as plain text |
 | `GET /anomalies` | Cross-team feed, filterable by severity |
+| `GET /digest` | The weekly digest: what is wrong, what was advised, what cleared |
+| `POST /admin/send-digest` | Post that digest to Teams now |
 | `POST /admin/refresh` | Run one full cycle now |
 | `POST /admin/seed-demo` | Fill every table with the demo organisation |
 | `GET/PUT /admin/settings` | Data source and watched repos. Never returns a secret |
@@ -141,7 +143,7 @@ then re-run the capture documented in `apps/frontend/README.md`.
 
 ```bash
 cd apps/backend
-pytest          # 69 tests: engine, rollup, bus factor, DuckDB, jobs, seeder, API
+pytest          # 72 tests: engine, rollup, bus factor, DuckDB, jobs, seeder, API
 ruff check app tests
 ```
 

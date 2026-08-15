@@ -176,27 +176,19 @@ SUMMARIES: dict[str, tuple[str, str, list[str], str, float]] = {
 # Anomalies that fired and then cleared. These are the loop's output: what was
 # recommended, and how long the problem stayed open. The predictive layer (P1)
 # trains on exactly this table.
-CLOSED_ANOMALIES: tuple[tuple[str, str, str, str, int], ...] = (
+#
+# (team, metric, severity, advice that was live, days open, days since it closed)
+# The last field is spread deliberately: two land inside the weekly digest
+# window and three are older, so the digest has something to report without the
+# resolution log looking like everything happened at once.
+CLOSED_ANOMALIES: tuple[tuple[str, str, str, str, int, int], ...] = (
     (
         "Azure Core Networking",
-        "review_time_hours",
-        "critical",
-        "Rebalance the review queue across the team",
-        9,
-    ),
-    (
-        "Azure Core Networking",
-        "commits_per_day",
-        "warning",
-        "Split the migration work into reviewable chunks",
-        4,
-    ),
-    (
-        "Fabric Data Plane",
         "pushes_per_day",
-        "warning",
+        "critical",
         "Re-enable the nightly integration branch",
         6,
+        2,
     ),
     (
         "Fabric Data Plane",
@@ -204,6 +196,23 @@ CLOSED_ANOMALIES: tuple[tuple[str, str, str, str, int], ...] = (
         "warning",
         "Assign a backup reviewer for the ingest area",
         3,
+        4,
+    ),
+    (
+        "Azure Core Networking",
+        "commits_per_day",
+        "warning",
+        "Split the migration work into reviewable chunks",
+        4,
+        11,
+    ),
+    (
+        "Fabric Data Plane",
+        "review_time_hours",
+        "critical",
+        "Rebalance the review queue across the team",
+        9,
+        18,
     ),
     (
         "M365 Copilot Extensibility",
@@ -211,6 +220,7 @@ CLOSED_ANOMALIES: tuple[tuple[str, str, str, str, int], ...] = (
         "info",
         "No action needed; the dip was a public holiday",
         2,
+        25,
     ),
 )
 
@@ -373,10 +383,9 @@ def seed_demo_data(
 
 def _seed_resolutions(conn: duckdb.DuckDBPyConnection, now: datetime) -> int:
     """Anomalies that fired weeks ago and have since cleared."""
-    for index, (team, metric, severity, action, open_days) in enumerate(
-        CLOSED_ANOMALIES
-    ):
-        detected_at = now - timedelta(days=14 + index * 5 + open_days)
+    for team, metric, severity, action, open_days, days_since in CLOSED_ANOMALIES:
+        resolved_at = now - timedelta(days=days_since)
+        detected_at = resolved_at - timedelta(days=open_days)
         insert_resolution(
             conn,
             anomaly_id=anomaly_event_id(team, metric),
@@ -386,7 +395,7 @@ def _seed_resolutions(conn: duckdb.DuckDBPyConnection, now: datetime) -> int:
             action=action,
             outcome="cleared",
             detected_at=detected_at,
-            resolved_at=detected_at + timedelta(days=open_days),
+            resolved_at=resolved_at,
         )
     return len(CLOSED_ANOMALIES)
 

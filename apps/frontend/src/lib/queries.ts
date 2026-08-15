@@ -12,6 +12,7 @@ import {
   askTeam,
   clearAllData,
   getAnomalies,
+  getDigest,
   getSettings,
   getTeam,
   getTeamAnomalies,
@@ -20,6 +21,7 @@ import {
   getTeamSummary,
   refreshNow,
   seedDemoData,
+  sendDigest,
   updateSettings,
 } from "@/lib/api";
 import type {
@@ -241,4 +243,22 @@ export function useClearData() {
     mutationFn: clearAllData,
     onSuccess: () => queryClient.invalidateQueries(),
   });
+}
+
+// --- weekly digest ----------------------------------------------------------
+
+export const digestKey = ["digest"] as const;
+
+export function useDigest() {
+  return useQuery({
+    queryKey: digestKey,
+    queryFn: getDigest,
+    staleTime: STALE_TIME_MS,
+    retry: retryUnlessClientError,
+  });
+}
+
+/** Sending changes nothing on the server, so nothing is invalidated. */
+export function useSendDigest() {
+  return useMutation({ mutationFn: sendDigest });
 }

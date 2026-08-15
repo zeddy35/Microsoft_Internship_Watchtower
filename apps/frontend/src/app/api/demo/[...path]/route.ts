@@ -70,6 +70,10 @@ export async function GET(
     return NextResponse.json(anomalies);
   }
 
+  if (path[0] === "digest") {
+    return NextResponse.json(snapshot.digest);
+  }
+
   if (path[0] === "admin" && path[1] === "settings") {
     return NextResponse.json(snapshot.settings);
   }
@@ -100,6 +104,12 @@ export async function POST(
       resolutionsWritten: 0,
       summariesWritten: 0,
     });
+  }
+
+  // Nothing is actually posted to Teams from a hosted demo; saying so beats
+  // a fake success toast.
+  if (path[0] === "admin" && path[1] === "send-digest") {
+    return NextResponse.json({ sent: 0, webhookConfigured: false });
   }
 
   if (path[0] === "teams" && path[2] === "ask") {

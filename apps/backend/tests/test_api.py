@@ -304,3 +304,45 @@ def test_demo_data_is_never_topped_up_with_a_live_sync(client, monkeypatch):
 
     assert called is False
     assert payload["collected"] is False
+
+
+def test_digest_reports_what_cleared_next_to_what_was_advised(client, seeded):
+    """The digest is the one place the whole loop is visible end to end."""
+    client.post("/admin/seed-demo")
+
+    digest = client.get("/digest").json()
+
+    assert digest["totals"]["teams"] == 3
+    assert digest["totals"]["resolvedInPeriod"] >= 0
+    assert digest["periodStart"].endswith("Z")
+
+    # Worst first: a digest is read top-down.
+    rank = {"critical": 0, "at-risk": 1, "healthy": 2}
+    order = [rank[team["status"]] for team in digest["teams"]]
+    assert order == sorted(order)
+
+    worst = digest["teams"][0]
+    assert worst["summary"]
+    assert worst["suggestions"]
+    assert worst["openAnomalies"]
+    assert {"metric", "action", "openDays", "resolvedAt"} <= set(
+        worst["resolved"][0]
+    ) if worst["resolved"] else True
+
+
+def test_digest_period_is_configurable(client):
+    client.post("/admin/seed-demo")
+
+    week = client.get("/digest").json()
+    quarter = client.get("/digest", params={"days": 90}).json()
+
+    # The seeded resolutions are weeks old, so a longer window finds more.
+    assert quarter["totals"]["resolvedInPeriod"] >= week["totals"]["resolvedInPeriod"]
+
+
+def test_sending_the_digest_without_a_webhook_says_so(client):
+    """Not having a channel wired up is a normal state, not an error."""
+    payload = client.post("/admin/send-digest").json()
+
+    assert payload["webhookConfigured"] is False
+    assert payload["sent"] == 0

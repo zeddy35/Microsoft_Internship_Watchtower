@@ -146,3 +146,49 @@ export const SeedResultSchema = z.object({
   anomaliesOpen: z.number(),
 });
 export type SeedResult = z.infer<typeof SeedResultSchema>;
+
+// Weekly digest -------------------------------------------------------------
+
+export const DigestResolutionSchema = z.object({
+  metric: z.string(),
+  metricLabel: z.string(),
+  severity: z.string(),
+  action: z.string(),
+  outcome: z.string(),
+  openDays: z.number(),
+  resolvedAt: z.iso.datetime(),
+});
+export type DigestResolution = z.infer<typeof DigestResolutionSchema>;
+
+export const DigestTeamSchema = z.object({
+  teamId: z.string(),
+  name: z.string(),
+  status: TeamStatusSchema,
+  healthScore: z.number(),
+  summary: z.string().nullable().default(null),
+  suggestions: z.array(z.string()).default([]),
+  generatedAt: z.iso.datetime().nullable().default(null),
+  metrics: z.array(MetricSchema).default([]),
+  openAnomalies: z.array(AnomalySchema).default([]),
+  resolved: z.array(DigestResolutionSchema).default([]),
+});
+export type DigestTeam = z.infer<typeof DigestTeamSchema>;
+
+export const DigestSchema = z.object({
+  periodStart: z.iso.datetime(),
+  periodEnd: z.iso.datetime(),
+  totals: z.object({
+    teams: z.number(),
+    needingAttention: z.number(),
+    openAnomalies: z.number(),
+    resolvedInPeriod: z.number(),
+  }),
+  teams: z.array(DigestTeamSchema).default([]),
+});
+export type Digest = z.infer<typeof DigestSchema>;
+
+export const SendDigestResultSchema = z.object({
+  sent: z.number(),
+  webhookConfigured: z.boolean(),
+});
+export type SendDigestResult = z.infer<typeof SendDigestResultSchema>;

@@ -179,3 +179,53 @@ class SeedResultOut(ApiModel):
     summaries: int
     metric_rows: int
     anomalies_open: int
+
+
+class DigestResolutionOut(ApiModel):
+    """One anomaly that closed inside the digest period."""
+
+    metric: str
+    metric_label: str
+    severity: str
+    action: str
+    outcome: str
+    open_days: float
+    resolved_at: UtcDatetime
+
+
+class DigestTeamOut(ApiModel):
+    team_id: str
+    name: str
+    status: TeamStatus
+    health_score: float
+    summary: str | None = None
+    suggestions: list[str] = Field(default_factory=list)
+    generated_at: UtcDatetime | None = None
+    metrics: list[MetricOut] = Field(default_factory=list)
+    open_anomalies: list[AnomalyOut] = Field(default_factory=list)
+    resolved: list[DigestResolutionOut] = Field(default_factory=list)
+
+
+class DigestTotalsOut(ApiModel):
+    teams: int
+    needing_attention: int
+    open_anomalies: int
+    resolved_in_period: int
+
+
+class DigestOut(ApiModel):
+    """The same content the scheduler posts to Teams, rendered as a page.
+
+    Worst teams first: a digest is read top-down and the point of it is to put
+    the team in trouble in front of the reader, not to list them alphabetically.
+    """
+
+    period_start: UtcDatetime
+    period_end: UtcDatetime
+    totals: DigestTotalsOut
+    teams: list[DigestTeamOut] = Field(default_factory=list)
+
+
+class SendDigestResult(ApiModel):
+    sent: int
+    webhook_configured: bool

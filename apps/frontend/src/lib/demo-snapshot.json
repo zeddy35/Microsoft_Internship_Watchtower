@@ -253,7 +253,7 @@
    "severity": "critical",
    "title": "Review time spiked",
    "description": "Review time is 93.4 hours, 1170% above the 28-day baseline of 7.4 hours (z=27.2).",
-   "detectedAt": "2026-08-15T19:09:33.825043Z"
+   "detectedAt": "2026-08-15T19:51:12.203122Z"
   },
   {
    "id": "azure-core-networking-stale-prs",
@@ -261,7 +261,7 @@
    "severity": "critical",
    "title": "2 stale PRs",
    "description": "2 open PRs unmerged for more than 7 days; the oldest (microsoft/azure-core-networking#4023) has been open 18 days.",
-   "detectedAt": "2026-08-15T19:09:33.825043Z"
+   "detectedAt": "2026-08-15T19:51:12.203122Z"
   },
   {
    "id": "fabric-data-plane-review-time-hours",
@@ -269,7 +269,7 @@
    "severity": "critical",
    "title": "Review time spiked",
    "description": "Review time is 30.7 hours, 157% above the 28-day baseline of 11.9 hours (z=16.8).",
-   "detectedAt": "2026-08-15T19:09:33.825043Z"
+   "detectedAt": "2026-08-15T19:51:12.203122Z"
   },
   {
    "id": "fabric-data-plane-stale-prs",
@@ -277,7 +277,7 @@
    "severity": "warning",
    "title": "1 stale PR",
    "description": "1 open PR unmerged for more than 7 days; the oldest (microsoft/fabric-data-plane#4045) has been open 11 days.",
-   "detectedAt": "2026-08-15T19:09:33.825043Z"
+   "detectedAt": "2026-08-15T19:51:12.203122Z"
   }
  ],
  "settings": {
@@ -295,36 +295,14 @@
  },
  "resolutions": [
   {
-   "anomalyId": "Azure Core Networking:review_time_hours",
+   "anomalyId": "Azure Core Networking:pushes_per_day",
    "teamId": "Azure Core Networking",
-   "metric": "review_time_hours",
-   "severity": "critical",
-   "action": "Rebalance the review queue across the team",
-   "outcome": "cleared",
-   "detectedAt": "2026-07-23T19:09:28.594601",
-   "resolvedAt": "2026-08-01T19:09:28.594601",
-   "openDays": 9.0
-  },
-  {
-   "anomalyId": "Azure Core Networking:commits_per_day",
-   "teamId": "Azure Core Networking",
-   "metric": "commits_per_day",
-   "severity": "warning",
-   "action": "Split the migration work into reviewable chunks",
-   "outcome": "cleared",
-   "detectedAt": "2026-07-23T19:09:28.594601",
-   "resolvedAt": "2026-07-27T19:09:28.594601",
-   "openDays": 4.0
-  },
-  {
-   "anomalyId": "Fabric Data Plane:pushes_per_day",
-   "teamId": "Fabric Data Plane",
    "metric": "pushes_per_day",
-   "severity": "warning",
+   "severity": "critical",
    "action": "Re-enable the nightly integration branch",
    "outcome": "cleared",
-   "detectedAt": "2026-07-16T19:09:28.594601",
-   "resolvedAt": "2026-07-22T19:09:28.594601",
+   "detectedAt": "2026-08-07T19:51:06.504790",
+   "resolvedAt": "2026-08-13T19:51:06.504790",
    "openDays": 6.0
   },
   {
@@ -334,9 +312,31 @@
    "severity": "warning",
    "action": "Assign a backup reviewer for the ingest area",
    "outcome": "cleared",
-   "detectedAt": "2026-07-14T19:09:28.594601",
-   "resolvedAt": "2026-07-17T19:09:28.594601",
+   "detectedAt": "2026-08-08T19:51:06.504790",
+   "resolvedAt": "2026-08-11T19:51:06.504790",
    "openDays": 3.0
+  },
+  {
+   "anomalyId": "Azure Core Networking:commits_per_day",
+   "teamId": "Azure Core Networking",
+   "metric": "commits_per_day",
+   "severity": "warning",
+   "action": "Split the migration work into reviewable chunks",
+   "outcome": "cleared",
+   "detectedAt": "2026-07-31T19:51:06.504790",
+   "resolvedAt": "2026-08-04T19:51:06.504790",
+   "openDays": 4.0
+  },
+  {
+   "anomalyId": "Fabric Data Plane:review_time_hours",
+   "teamId": "Fabric Data Plane",
+   "metric": "review_time_hours",
+   "severity": "critical",
+   "action": "Rebalance the review queue across the team",
+   "outcome": "cleared",
+   "detectedAt": "2026-07-19T19:51:06.504790",
+   "resolvedAt": "2026-07-28T19:51:06.504790",
+   "openDays": 9.0
   },
   {
    "anomalyId": "M365 Copilot Extensibility:commits_per_day",
@@ -345,11 +345,245 @@
    "severity": "info",
    "action": "No action needed; the dip was a public holiday",
    "outcome": "cleared",
-   "detectedAt": "2026-07-10T19:09:28.594601",
-   "resolvedAt": "2026-07-12T19:09:28.594601",
+   "detectedAt": "2026-07-19T19:51:06.504790",
+   "resolvedAt": "2026-07-21T19:51:06.504790",
    "openDays": 2.0
   }
  ],
+ "digest": {
+  "periodStart": "2026-08-08T19:51:24.639650Z",
+  "periodEnd": "2026-08-15T19:51:24.639650Z",
+  "totals": {
+   "teams": 3,
+   "needingAttention": 2,
+   "openAnomalies": 4,
+   "resolvedInPeriod": 2
+  },
+  "teams": [
+   {
+    "teamId": "azure-core-networking",
+    "name": "Azure Core Networking",
+    "status": "critical",
+    "healthScore": 50.0,
+    "summary": "Commit and push volume have effectively stopped over the last five days while time-to-first-review climbed past four days, which points at a review bottleneck rather than a drop in workload. Two pull requests have been open more than a week, and 78% of recent changes come from a single engineer, so the queue has nowhere else to go.",
+    "suggestions": [
+     "Rebalance the review queue: assign the two stale PRs to a second reviewer today",
+     "Pair a second engineer onto the peering configuration area",
+     "Split the largest open PR so it can be reviewed incrementally"
+    ],
+    "generatedAt": "2026-08-15T16:51:06.504790Z",
+    "metrics": [
+     {
+      "id": "commit-activity",
+      "label": "Commit activity",
+      "unit": "/wk",
+      "value": 7.0,
+      "baseline": 40.5,
+      "delta": -83.0,
+      "direction": "down",
+      "trend": "bad"
+     },
+     {
+      "id": "push-frequency",
+      "label": "Push frequency",
+      "unit": "/wk",
+      "value": 1.8,
+      "baseline": 5.0,
+      "delta": -65.0,
+      "direction": "down",
+      "trend": "bad"
+     },
+     {
+      "id": "pr-review-time",
+      "label": "PR review time",
+      "unit": "d",
+      "value": 3.9,
+      "baseline": 0.3,
+      "delta": 1130.0,
+      "direction": "up",
+      "trend": "bad"
+     },
+     {
+      "id": "on-goal-commits",
+      "label": "On-goal commits",
+      "unit": "%",
+      "value": 44.7,
+      "baseline": 47.0,
+      "delta": -5.0,
+      "direction": "down",
+      "trend": "good"
+     }
+    ],
+    "openAnomalies": [
+     {
+      "id": "azure-core-networking-review-time-hours",
+      "teamId": "azure-core-networking",
+      "severity": "critical",
+      "title": "Review time spiked",
+      "description": "Review time is 93.4 hours, 1170% above the 28-day baseline of 7.4 hours (z=27.2).",
+      "detectedAt": "2026-08-15T19:51:12.203122Z"
+     },
+     {
+      "id": "azure-core-networking-stale-prs",
+      "teamId": "azure-core-networking",
+      "severity": "critical",
+      "title": "2 stale PRs",
+      "description": "2 open PRs unmerged for more than 7 days; the oldest (microsoft/azure-core-networking#4023) has been open 18 days.",
+      "detectedAt": "2026-08-15T19:51:12.203122Z"
+     }
+    ],
+    "resolved": [
+     {
+      "metric": "pushes_per_day",
+      "metricLabel": "Push frequency",
+      "severity": "critical",
+      "action": "Re-enable the nightly integration branch",
+      "outcome": "cleared",
+      "openDays": 6.0,
+      "resolvedAt": "2026-08-13T19:51:06.504790Z"
+     }
+    ]
+   },
+   {
+    "teamId": "fabric-data-plane",
+    "name": "Fabric Data Plane",
+    "status": "at-risk",
+    "healthScore": 65.0,
+    "summary": "Commit volume is down about 45% against the 28-day baseline and reviews now take roughly a day and a half, up from half a day. The team is still shipping, but the trend has been consistently downward for a week and one pull request has gone stale.",
+    "suggestions": [
+     "Clear the stale pull request before it blocks the next change",
+     "Set a same-day first-review expectation for the coming sprint"
+    ],
+    "generatedAt": "2026-08-15T16:51:06.504790Z",
+    "metrics": [
+     {
+      "id": "commit-activity",
+      "label": "Commit activity",
+      "unit": "/wk",
+      "value": 13.1,
+      "baseline": 31.8,
+      "delta": -59.0,
+      "direction": "down",
+      "trend": "bad"
+     },
+     {
+      "id": "push-frequency",
+      "label": "Push frequency",
+      "unit": "/wk",
+      "value": 4.4,
+      "baseline": 5.0,
+      "delta": -12.0,
+      "direction": "down",
+      "trend": "good"
+     },
+     {
+      "id": "pr-review-time",
+      "label": "PR review time",
+      "unit": "d",
+      "value": 1.3,
+      "baseline": 0.5,
+      "delta": 161.0,
+      "direction": "up",
+      "trend": "bad"
+     },
+     {
+      "id": "on-goal-commits",
+      "label": "On-goal commits",
+      "unit": "%",
+      "value": 56.3,
+      "baseline": 54.7,
+      "delta": 3.0,
+      "direction": "up",
+      "trend": "good"
+     }
+    ],
+    "openAnomalies": [
+     {
+      "id": "fabric-data-plane-review-time-hours",
+      "teamId": "fabric-data-plane",
+      "severity": "critical",
+      "title": "Review time spiked",
+      "description": "Review time is 30.7 hours, 157% above the 28-day baseline of 11.9 hours (z=16.8).",
+      "detectedAt": "2026-08-15T19:51:12.203122Z"
+     },
+     {
+      "id": "fabric-data-plane-stale-prs",
+      "teamId": "fabric-data-plane",
+      "severity": "warning",
+      "title": "1 stale PR",
+      "description": "1 open PR unmerged for more than 7 days; the oldest (microsoft/fabric-data-plane#4045) has been open 11 days.",
+      "detectedAt": "2026-08-15T19:51:12.203122Z"
+     }
+    ],
+    "resolved": [
+     {
+      "metric": "stale_prs",
+      "metricLabel": "Stale pull requests",
+      "severity": "warning",
+      "action": "Assign a backup reviewer for the ingest area",
+      "outcome": "cleared",
+      "openDays": 3.0,
+      "resolvedAt": "2026-08-11T19:51:06.504790Z"
+     }
+    ]
+   },
+   {
+    "teamId": "m365-copilot-extensibility",
+    "name": "M365 Copilot Extensibility",
+    "status": "healthy",
+    "healthScore": 100.0,
+    "summary": "Cadence is steady, reviews land within a working day, and ownership is spread across five contributors with no area above 35%. Nothing here needs attention this week.",
+    "suggestions": [
+     "Keep the current review rotation"
+    ],
+    "generatedAt": "2026-08-15T16:51:06.504790Z",
+    "metrics": [
+     {
+      "id": "commit-activity",
+      "label": "Commit activity",
+      "unit": "/wk",
+      "value": 24.5,
+      "baseline": 35.5,
+      "delta": -31.0,
+      "direction": "down",
+      "trend": "caution"
+     },
+     {
+      "id": "push-frequency",
+      "label": "Push frequency",
+      "unit": "/wk",
+      "value": 4.4,
+      "baseline": 5.0,
+      "delta": -12.0,
+      "direction": "down",
+      "trend": "good"
+     },
+     {
+      "id": "pr-review-time",
+      "label": "PR review time",
+      "unit": "d",
+      "value": 0.2,
+      "baseline": 0.3,
+      "delta": -38.0,
+      "direction": "down",
+      "trend": "good"
+     },
+     {
+      "id": "on-goal-commits",
+      "label": "On-goal commits",
+      "unit": "%",
+      "value": 50.4,
+      "baseline": 49.3,
+      "delta": 2.0,
+      "direction": "up",
+      "trend": "good"
+     }
+    ],
+    "openAnomalies": [],
+    "resolved": []
+   }
+  ]
+ },
  "byTeam": {
   "azure-core-networking": {
    "team": {
@@ -520,7 +754,7 @@
      "severity": "critical",
      "title": "Review time spiked",
      "description": "Review time is 93.4 hours, 1170% above the 28-day baseline of 7.4 hours (z=27.2).",
-     "detectedAt": "2026-08-15T19:09:33.825043Z"
+     "detectedAt": "2026-08-15T19:51:12.203122Z"
     },
     {
      "id": "azure-core-networking-stale-prs",
@@ -528,7 +762,7 @@
      "severity": "critical",
      "title": "2 stale PRs",
      "description": "2 open PRs unmerged for more than 7 days; the oldest (microsoft/azure-core-networking#4023) has been open 18 days.",
-     "detectedAt": "2026-08-15T19:09:33.825043Z"
+     "detectedAt": "2026-08-15T19:51:12.203122Z"
     }
    ],
    "busFactor": [
@@ -550,7 +784,7 @@
      "Pair a second engineer onto the peering configuration area",
      "Split the largest open PR so it can be reviewed incrementally"
     ],
-    "generatedAt": "2026-08-15T16:09:28.594601Z"
+    "generatedAt": "2026-08-15T16:51:06.504790Z"
    }
   },
   "fabric-data-plane": {
@@ -712,7 +946,7 @@
      "severity": "critical",
      "title": "Review time spiked",
      "description": "Review time is 30.7 hours, 157% above the 28-day baseline of 11.9 hours (z=16.8).",
-     "detectedAt": "2026-08-15T19:09:33.825043Z"
+     "detectedAt": "2026-08-15T19:51:12.203122Z"
     },
     {
      "id": "fabric-data-plane-stale-prs",
@@ -720,7 +954,7 @@
      "severity": "warning",
      "title": "1 stale PR",
      "description": "1 open PR unmerged for more than 7 days; the oldest (microsoft/fabric-data-plane#4045) has been open 11 days.",
-     "detectedAt": "2026-08-15T19:09:33.825043Z"
+     "detectedAt": "2026-08-15T19:51:12.203122Z"
     }
    ],
    "busFactor": [
@@ -741,7 +975,7 @@
      "Clear the stale pull request before it blocks the next change",
      "Set a same-day first-review expectation for the coming sprint"
     ],
-    "generatedAt": "2026-08-15T16:09:28.594601Z"
+    "generatedAt": "2026-08-15T16:51:06.504790Z"
    }
   },
   "m365-copilot-extensibility": {
@@ -924,7 +1158,7 @@
     "suggestions": [
      "Keep the current review rotation"
     ],
-    "generatedAt": "2026-08-15T16:09:28.594601Z"
+    "generatedAt": "2026-08-15T16:51:06.504790Z"
    }
   }
  }

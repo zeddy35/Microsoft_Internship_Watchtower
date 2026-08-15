@@ -2,14 +2,18 @@ import type { ZodType } from "zod";
 import {
   AnomalySchema,
   AppSettingsSchema,
+  DigestSchema,
   SeedResultSchema,
+  SendDigestResultSchema,
   TeamMetricsSchema,
   TeamSchema,
   TeamSummarySchema,
   type Anomaly,
   type AnomalySeverity,
   type AppSettings,
+  type Digest,
   type SeedResult,
+  type SendDigestResult,
   type Team,
   type TeamMetrics,
   type TeamSummary,
@@ -214,4 +218,17 @@ export function seedDemoData(): Promise<SeedResult> {
 /** Empty every data table, leaving configuration in place. */
 export function clearAllData(): Promise<AppSettings> {
   return request("/admin/clear", AppSettingsSchema, { method: "POST" });
+}
+
+// --- weekly digest ----------------------------------------------------------
+
+export function getDigest(): Promise<Digest> {
+  return request("/digest", DigestSchema);
+}
+
+/** Post the digest to Teams now instead of waiting for the scheduled job. */
+export function sendDigest(): Promise<SendDigestResult> {
+  return request("/admin/send-digest", SendDigestResultSchema, {
+    method: "POST",
+  });
 }
