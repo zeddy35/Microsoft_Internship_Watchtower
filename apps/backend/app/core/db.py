@@ -148,6 +148,23 @@ class RollingStats:
     sample_size: int
 
 
+@dataclass(frozen=True, slots=True)
+class StalePrRow:
+    id: int
+    repo: str
+    author: str
+    opened_at: datetime
+    age_days: int
+
+
+@dataclass(frozen=True, slots=True)
+class OwnershipRow:
+    repo: str
+    author: str
+    commit_count: int
+    last_committed_at: datetime
+
+
 # --- repos --------------------------------------------------------------
 
 
@@ -334,3 +351,62 @@ def get_avg_review_time_hours_by_team(
         [since, until, until],
     ).fetchall()
     return dict(rows)
+
+
+# --- helpers for the anomaly engine + bus factor ---------------------------
+
+
+def get_latest_metric(
+    conn: duckdb.DuckDBPyConnection,
+    team: str,
+    metric: str,
+    as_of: date | None = None,
+) -> MetricDailyRow | None:
+    """Most recent stored value for a team/metric, on or before as_of."""
+    row = conn.execute(
+        "SELECT team, metric, day, value FROM metrics_daily "
+        "WHERE team = ? AND metric = ? AND (? IS NULL OR day <= ?) "
+        "ORDER BY day DESC LIMIT 1",
+        [team, metric, as_of, as_of],
+    ).fetchone()
+    return MetricDailyRow(*row) if row else None
+
+
+def get_stale_open_prs(
+    conn: duckdb.DuckDBPyConnection,
+    team: str,
+    as_of: datetime,
+    older_than_days: int = 7,
+) -> list[StalePrRow]:
+    """Open, unmerged PRs for a team's repos opened more than N days before as_of."""
+    cutoff = as_of - timedelta(days=older_than_days)
+    rows = conn.execute(
+        "SELECT p.id, p.repo, p.author, p.opened_at, "
+        "date_diff('day', p.opened_at, ?) AS age_days "
+        "FROM pull_requests p JOIN repos r ON p.repo = r.repo "
+        "WHERE r.team = ? AND p.merged_at IS NULL AND p.state = 'open' "
+        "AND p.opened_at < ? "
+        "ORDER BY p.opened_at",
+        [as_of, team, cutoff],
+    ).fetchall()
+    return [StalePrRow(*row) for row in rows]
+
+
+def get_commit_ownership(
+    conn: duckdb.DuckDBPyConnection, team: str, since: datetime
+) -> list[OwnershipRow]:
+    """Per-repo, per-author commit counts + last activity for a team, since a cutoff.
+
+    Repos stand in for "code areas": DuckDB stores commits at repo granularity,
+    not per-file, so bus-factor concentration is measured across a team's repos.
+    """
+    rows = conn.execute(
+        "SELECT c.repo, c.author, count(*) AS commit_count, "
+        "max(c.committed_at) AS last_committed_at "
+        "FROM commits c JOIN repos r ON c.repo = r.repo "
+        "WHERE r.team = ? AND c.committed_at >= ? "
+        "GROUP BY c.repo, c.author "
+        "ORDER BY c.repo, commit_count DESC",
+        [team, since],
+    ).fetchall()
+    return [OwnershipRow(*row) for row in rows]
