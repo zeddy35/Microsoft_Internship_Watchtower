@@ -41,6 +41,16 @@ class Settings(BaseSettings):
     # Microsoft Teams webhook (proactive alerts)
     TEAMS_WEBHOOK_URL: str = ""
 
+    # Background refresh (collect -> rollup -> anomalies -> resolver)
+    SCHEDULER_ENABLED: bool = True
+    REFRESH_INTERVAL_MINUTES: int = 30
+    # Weekly digest, in the scheduler's timezone (UTC).
+    DIGEST_DAY_OF_WEEK: str = "mon"
+    DIGEST_HOUR: int = 8
+
+    # Optional sprint goal used by the resolver's on-goal reasoning.
+    SPRINT_GOAL: str = ""
+
     # API server
     API_HOST: str = "0.0.0.0"
     API_PORT: int = 8000

@@ -83,6 +83,60 @@ def init_schema(conn: duckdb.DuckDBPyConnection) -> None:
         )
     """)
 
+    # Every anomaly the engine has ever flagged, keyed by a stable
+    # team+metric id so repeated passes update one row instead of piling up.
+    # `cleared_at` is what the verify pass writes when the anomaly goes away.
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS anomaly_events (
+            id TEXT PRIMARY KEY,
+            team TEXT NOT NULL,
+            metric TEXT NOT NULL,
+            severity TEXT NOT NULL,
+            title TEXT NOT NULL,
+            description TEXT NOT NULL,
+            observed DOUBLE NOT NULL,
+            baseline DOUBLE NOT NULL,
+            z_score DOUBLE NOT NULL,
+            detected_at TIMESTAMP NOT NULL,
+            last_seen_at TIMESTAMP NOT NULL,
+            cleared_at TIMESTAMP,
+            notified_at TIMESTAMP
+        )
+    """)
+
+    # Labeled outcomes: one row per anomaly that closed, with how long it
+    # stayed open and what Watchtower had recommended. This is the training
+    # set the predictive layer (P1) learns from.
+    conn.execute("CREATE SEQUENCE IF NOT EXISTS resolutions_id_seq START 1")
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS resolutions (
+            id BIGINT PRIMARY KEY DEFAULT nextval('resolutions_id_seq'),
+            anomaly_id TEXT NOT NULL,
+            team TEXT NOT NULL,
+            metric TEXT NOT NULL,
+            severity TEXT NOT NULL,
+            action TEXT NOT NULL,
+            outcome TEXT NOT NULL,
+            detected_at TIMESTAMP NOT NULL,
+            resolved_at TIMESTAMP NOT NULL,
+            open_days DOUBLE NOT NULL
+        )
+    """)
+
+    # Latest Phi-4 verdict per team, written by the scheduled resolver pass so
+    # the API can answer instantly instead of blocking on local inference.
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS summaries (
+            team TEXT PRIMARY KEY,
+            summary TEXT NOT NULL,
+            root_cause TEXT NOT NULL,
+            remediation_steps TEXT NOT NULL,
+            verify_signal TEXT NOT NULL,
+            on_goal_score DOUBLE NOT NULL,
+            generated_at TIMESTAMP NOT NULL
+        )
+    """)
+
     conn.execute(
         "CREATE INDEX IF NOT EXISTS idx_commits_repo_time "
         "ON commits (repo, committed_at)"
@@ -97,6 +151,13 @@ def init_schema(conn: duckdb.DuckDBPyConnection) -> None:
     conn.execute(
         "CREATE INDEX IF NOT EXISTS idx_metrics_daily_team_metric "
         "ON metrics_daily (team, metric, day)"
+    )
+    conn.execute(
+        "CREATE INDEX IF NOT EXISTS idx_anomaly_events_team "
+        "ON anomaly_events (team, cleared_at)"
+    )
+    conn.execute(
+        "CREATE INDEX IF NOT EXISTS idx_resolutions_team ON resolutions (team)"
     )
 
 
@@ -392,6 +453,32 @@ def get_stale_open_prs(
     return [StalePrRow(*row) for row in rows]
 
 
+@dataclass(frozen=True, slots=True)
+class CommitDocRow:
+    sha: str
+    repo: str
+    author: str
+    message: str
+    committed_at: datetime
+
+
+def get_commit_docs_for_team(
+    conn: duckdb.DuckDBPyConnection,
+    team: str,
+    since: datetime,
+    limit: int = 2000,
+) -> list[CommitDocRow]:
+    """Recent commit messages for a team's repos, newest first, for indexing."""
+    rows = conn.execute(
+        "SELECT c.sha, c.repo, c.author, c.message, c.committed_at "
+        "FROM commits c JOIN repos r ON c.repo = r.repo "
+        "WHERE r.team = ? AND c.committed_at >= ? "
+        "ORDER BY c.committed_at DESC LIMIT ?",
+        [team, since, limit],
+    ).fetchall()
+    return [CommitDocRow(*row) for row in rows]
+
+
 def get_commit_ownership(
     conn: duckdb.DuckDBPyConnection, team: str, since: datetime
 ) -> list[OwnershipRow]:
@@ -410,3 +497,377 @@ def get_commit_ownership(
         [team, since],
     ).fetchall()
     return [OwnershipRow(*row) for row in rows]
+
+
+# --- daily rollup sources ---------------------------------------------------
+
+
+@dataclass(frozen=True, slots=True)
+class DailyValueRow:
+    """One (team, day) aggregate, before it is named and stored as a metric."""
+
+    team: str
+    day: date
+    value: float
+
+
+def get_daily_commit_counts(
+    conn: duckdb.DuckDBPyConnection, since: date, until: date
+) -> list[DailyValueRow]:
+    """Commits per team per day over [since, until)."""
+    rows = conn.execute(
+        "SELECT r.team, CAST(c.committed_at AS DATE) AS day, count(*) "
+        "FROM commits c JOIN repos r ON c.repo = r.repo "
+        "WHERE r.team IS NOT NULL AND c.committed_at >= ? AND c.committed_at < ? "
+        "GROUP BY 1, 2 ORDER BY 1, 2",
+        [since, until],
+    ).fetchall()
+    return [DailyValueRow(team, day, float(value)) for team, day, value in rows]
+
+
+def get_daily_push_counts(
+    conn: duckdb.DuckDBPyConnection, since: date, until: date
+) -> list[DailyValueRow]:
+    """Pushes per team per day over [since, until)."""
+    rows = conn.execute(
+        "SELECT r.team, CAST(p.pushed_at AS DATE) AS day, count(*) "
+        "FROM pushes p JOIN repos r ON p.repo = r.repo "
+        "WHERE r.team IS NOT NULL AND p.pushed_at >= ? AND p.pushed_at < ? "
+        "GROUP BY 1, 2 ORDER BY 1, 2",
+        [since, until],
+    ).fetchall()
+    return [DailyValueRow(team, day, float(value)) for team, day, value in rows]
+
+
+def get_daily_review_time_hours(
+    conn: duckdb.DuckDBPyConnection, since: date, until: date
+) -> list[DailyValueRow]:
+    """Average hours-to-first-review per team per day, bucketed by open date.
+
+    Only days where at least one PR was both opened and later reviewed produce
+    a value: a day with no reviewed PRs is missing data, not a review time of
+    zero, and filling it with zero would poison the baseline.
+    """
+    rows = conn.execute(
+        "SELECT r.team, CAST(p.opened_at AS DATE) AS day, "
+        "avg(date_diff('minute', p.opened_at, p.first_review_at) / 60.0) "
+        "FROM pull_requests p JOIN repos r ON p.repo = r.repo "
+        "WHERE r.team IS NOT NULL AND p.first_review_at IS NOT NULL "
+        "AND p.opened_at >= ? AND p.opened_at < ? "
+        "GROUP BY 1, 2 ORDER BY 1, 2",
+        [since, until],
+    ).fetchall()
+    return [DailyValueRow(team, day, float(value)) for team, day, value in rows]
+
+
+def get_active_days(
+    conn: duckdb.DuckDBPyConnection, team: str, since: date, until: date
+) -> list[date]:
+    """Days in [since, until) on which the team's repos recorded any commit.
+
+    Zero-filling the commit series needs a notion of "the team existed and did
+    nothing" versus "we have no data yet", and the first commit we ever saw is
+    the honest start of the series.
+    """
+    rows = conn.execute(
+        "SELECT DISTINCT CAST(c.committed_at AS DATE) AS day "
+        "FROM commits c JOIN repos r ON c.repo = r.repo "
+        "WHERE r.team = ? AND c.committed_at >= ? AND c.committed_at < ? "
+        "ORDER BY day",
+        [team, since, until],
+    ).fetchall()
+    return [row[0] for row in rows]
+
+
+# --- team member stats ------------------------------------------------------
+
+
+@dataclass(frozen=True, slots=True)
+class MemberStatsRow:
+    author: str
+    commit_count: int
+    linked_commit_count: int
+    last_committed_at: datetime
+    avg_review_hours: float | None
+
+
+# A commit counts as "on goal" when it references tracked work: an issue or PR
+# number, or a closing keyword. It is a proxy, but a checkable one, and it beats
+# asking a language model to guess whether a commit matched the sprint.
+_LINKED_COMMIT_PATTERN = r"(#[0-9]+)|(?i:\b(fix(es|ed)?|close[sd]?|resolve[sd]?)\b)"
+
+
+def get_member_stats(
+    conn: duckdb.DuckDBPyConnection, team: str, since: datetime
+) -> list[MemberStatsRow]:
+    """Per-author activity for a team since a cutoff, busiest first."""
+    rows = conn.execute(
+        """
+        WITH commit_stats AS (
+            SELECT c.author,
+                   count(*) AS commit_count,
+                   sum(CASE WHEN regexp_matches(c.message, ?) THEN 1 ELSE 0 END)
+                       AS linked_commit_count,
+                   max(c.committed_at) AS last_committed_at
+            FROM commits c JOIN repos r ON c.repo = r.repo
+            WHERE r.team = ? AND c.committed_at >= ?
+            GROUP BY c.author
+        ),
+        review_stats AS (
+            SELECT p.author,
+                   avg(date_diff('minute', p.opened_at, p.first_review_at) / 60.0)
+                       AS avg_review_hours
+            FROM pull_requests p JOIN repos r ON p.repo = r.repo
+            WHERE r.team = ? AND p.first_review_at IS NOT NULL
+              AND p.opened_at >= ?
+            GROUP BY p.author
+        )
+        SELECT c.author, c.commit_count, c.linked_commit_count,
+               c.last_committed_at, rv.avg_review_hours
+        FROM commit_stats c
+        LEFT JOIN review_stats rv ON rv.author = c.author
+        ORDER BY c.commit_count DESC, c.author
+        """,
+        [_LINKED_COMMIT_PATTERN, team, since, team, since],
+    ).fetchall()
+    return [
+        MemberStatsRow(
+            author=author,
+            commit_count=int(commit_count),
+            linked_commit_count=int(linked or 0),
+            last_committed_at=last_committed_at,
+            avg_review_hours=float(avg_review) if avg_review is not None else None,
+        )
+        for author, commit_count, linked, last_committed_at, avg_review in rows
+    ]
+
+
+# --- anomaly events + resolutions -------------------------------------------
+
+
+@dataclass(frozen=True, slots=True)
+class AnomalyEventRow:
+    id: str
+    team: str
+    metric: str
+    severity: str
+    title: str
+    description: str
+    observed: float
+    baseline: float
+    z_score: float
+    detected_at: datetime
+    last_seen_at: datetime
+    cleared_at: datetime | None
+    notified_at: datetime | None
+
+
+def anomaly_event_id(team: str, metric: str) -> str:
+    """Stable key for an anomaly: one open event per team and metric."""
+    return f"{team}:{metric}"
+
+
+def upsert_anomaly_event(
+    conn: duckdb.DuckDBPyConnection,
+    *,
+    team: str,
+    metric: str,
+    severity: str,
+    title: str,
+    description: str,
+    observed: float,
+    baseline: float,
+    z_score: float,
+    seen_at: datetime,
+) -> str:
+    """Record that an anomaly is currently firing.
+
+    A row that was previously cleared is reopened: `detected_at` resets so the
+    open-duration label stays meaningful for the next resolution.
+    """
+    event_id = anomaly_event_id(team, metric)
+    conn.execute(
+        "INSERT INTO anomaly_events "
+        "(id, team, metric, severity, title, description, observed, baseline, "
+        " z_score, detected_at, last_seen_at, cleared_at, notified_at) "
+        "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NULL, NULL) "
+        "ON CONFLICT (id) DO UPDATE SET "
+        "severity = excluded.severity, title = excluded.title, "
+        "description = excluded.description, observed = excluded.observed, "
+        "baseline = excluded.baseline, z_score = excluded.z_score, "
+        "last_seen_at = excluded.last_seen_at, "
+        "detected_at = CASE WHEN anomaly_events.cleared_at IS NULL "
+        "                   THEN anomaly_events.detected_at "
+        "                   ELSE excluded.detected_at END, "
+        "cleared_at = NULL",
+        [
+            event_id,
+            team,
+            metric,
+            severity,
+            title,
+            description,
+            observed,
+            baseline,
+            z_score,
+            seen_at,
+            seen_at,
+        ],
+    )
+    return event_id
+
+
+def get_open_anomaly_events(
+    conn: duckdb.DuckDBPyConnection, team: str | None = None
+) -> list[AnomalyEventRow]:
+    """Anomalies that have not been cleared, worst-recent first."""
+    rows = conn.execute(
+        "SELECT id, team, metric, severity, title, description, observed, "
+        "baseline, z_score, detected_at, last_seen_at, cleared_at, notified_at "
+        "FROM anomaly_events "
+        "WHERE cleared_at IS NULL AND (? IS NULL OR team = ?) "
+        "ORDER BY detected_at DESC",
+        [team, team],
+    ).fetchall()
+    return [AnomalyEventRow(*row) for row in rows]
+
+
+def get_unnotified_events(
+    conn: duckdb.DuckDBPyConnection, severities: Sequence[str]
+) -> list[AnomalyEventRow]:
+    """Open anomalies at the given severities that have never been alerted on."""
+    if not severities:
+        return []
+    placeholders = ", ".join("?" for _ in severities)
+    rows = conn.execute(
+        "SELECT id, team, metric, severity, title, description, observed, "
+        "baseline, z_score, detected_at, last_seen_at, cleared_at, notified_at "
+        "FROM anomaly_events "
+        "WHERE cleared_at IS NULL AND notified_at IS NULL "
+        f"AND severity IN ({placeholders}) "
+        "ORDER BY detected_at",
+        list(severities),
+    ).fetchall()
+    return [AnomalyEventRow(*row) for row in rows]
+
+
+def mark_events_notified(
+    conn: duckdb.DuckDBPyConnection, event_ids: Sequence[str], notified_at: datetime
+) -> None:
+    if not event_ids:
+        return
+    conn.executemany(
+        "UPDATE anomaly_events SET notified_at = ? WHERE id = ?",
+        [(notified_at, event_id) for event_id in event_ids],
+    )
+
+
+def clear_anomaly_event(
+    conn: duckdb.DuckDBPyConnection, event_id: str, cleared_at: datetime
+) -> None:
+    conn.execute(
+        "UPDATE anomaly_events SET cleared_at = ? WHERE id = ? AND cleared_at IS NULL",
+        [cleared_at, event_id],
+    )
+
+
+def insert_resolution(
+    conn: duckdb.DuckDBPyConnection,
+    *,
+    anomaly_id: str,
+    team: str,
+    metric: str,
+    severity: str,
+    action: str,
+    outcome: str,
+    detected_at: datetime,
+    resolved_at: datetime,
+) -> None:
+    """Write a labeled example: this anomaly closed, after this long."""
+    open_days = (resolved_at - detected_at).total_seconds() / 86400.0
+    conn.execute(
+        "INSERT INTO resolutions "
+        "(anomaly_id, team, metric, severity, action, outcome, detected_at, "
+        " resolved_at, open_days) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+        [
+            anomaly_id,
+            team,
+            metric,
+            severity,
+            action,
+            outcome,
+            detected_at,
+            resolved_at,
+            open_days,
+        ],
+    )
+
+
+@dataclass(frozen=True, slots=True)
+class ResolutionRow:
+    anomaly_id: str
+    team: str
+    metric: str
+    severity: str
+    action: str
+    outcome: str
+    detected_at: datetime
+    resolved_at: datetime
+    open_days: float
+
+
+def list_resolutions(
+    conn: duckdb.DuckDBPyConnection, team: str | None = None
+) -> list[ResolutionRow]:
+    rows = conn.execute(
+        "SELECT anomaly_id, team, metric, severity, action, outcome, "
+        "detected_at, resolved_at, open_days FROM resolutions "
+        "WHERE (? IS NULL OR team = ?) ORDER BY resolved_at DESC",
+        [team, team],
+    ).fetchall()
+    return [ResolutionRow(*row) for row in rows]
+
+
+# --- cached Phi-4 summaries -------------------------------------------------
+
+
+@dataclass(frozen=True, slots=True)
+class SummaryRow:
+    team: str
+    summary: str
+    root_cause: str
+    remediation_steps: str  # JSON-encoded list[str]
+    verify_signal: str
+    on_goal_score: float
+    generated_at: datetime
+
+
+def upsert_summary(conn: duckdb.DuckDBPyConnection, row: SummaryRow) -> None:
+    conn.execute(
+        "INSERT INTO summaries (team, summary, root_cause, remediation_steps, "
+        "verify_signal, on_goal_score, generated_at) VALUES (?, ?, ?, ?, ?, ?, ?) "
+        "ON CONFLICT (team) DO UPDATE SET summary = excluded.summary, "
+        "root_cause = excluded.root_cause, "
+        "remediation_steps = excluded.remediation_steps, "
+        "verify_signal = excluded.verify_signal, "
+        "on_goal_score = excluded.on_goal_score, "
+        "generated_at = excluded.generated_at",
+        [
+            row.team,
+            row.summary,
+            row.root_cause,
+            row.remediation_steps,
+            row.verify_signal,
+            row.on_goal_score,
+            row.generated_at,
+        ],
+    )
+
+
+def get_summary(conn: duckdb.DuckDBPyConnection, team: str) -> SummaryRow | None:
+    row = conn.execute(
+        "SELECT team, summary, root_cause, remediation_steps, verify_signal, "
+        "on_goal_score, generated_at FROM summaries WHERE team = ?",
+        [team],
+    ).fetchone()
+    return SummaryRow(*row) if row else None
