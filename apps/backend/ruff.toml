@@ -1,0 +1,14 @@
+# Lint config for the Watchtower backend.
+line-length = 100
+target-version = "py311"
+
+[lint]
+select = ["E", "F", "I", "B", "UP", "SIM", "C4", "DTZ", "RUF"]
+ignore = [
+    # FastAPI's dependency/query defaults are function calls by design.
+    "B008",
+]
+
+[lint.per-file-ignores]
+# Tests pin a fixed naive clock on purpose: DuckDB stores naive UTC.
+"tests/*" = ["DTZ001", "DTZ005"]
