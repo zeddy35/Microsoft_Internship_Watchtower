@@ -234,3 +234,15 @@ def test_app_logs_are_visible_under_uvicorn(monkeypatch):
     finally:
         app_logger.handlers = original_handlers
         app_logger.propagate = original_propagate
+
+
+def test_each_request_gets_its_own_database_handle():
+    """A shared DuckDB connection across threads returns empty results, not errors."""
+    from app.api.deps import get_db
+
+    first = get_db()
+    second = get_db()
+
+    assert first is not second
+    # Both still see the same database.
+    assert first.execute("SELECT 1").fetchone() == second.execute("SELECT 1").fetchone()

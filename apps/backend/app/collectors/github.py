@@ -253,7 +253,9 @@ async def collect_repo(client: httpx.AsyncClient, conn: Any, repo: str) -> None:
 async def collect_all() -> None:
     """Sync every repo in settings.GITHUB_REPOS. Logs and continues on per-repo failure."""
     settings = get_settings()
-    conn = get_connection()
+    # Own cursor: collection runs alongside live requests and the scheduler,
+    # and a DuckDB connection must not be shared across threads.
+    conn = get_connection().cursor()
 
     async with _make_client(settings.GITHUB_TOKEN) as client:
         for repo in settings.GITHUB_REPOS:

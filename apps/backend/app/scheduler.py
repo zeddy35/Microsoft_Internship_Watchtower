@@ -26,7 +26,9 @@ DIGEST_JOB_ID = "watchtower-weekly-digest"
 
 
 async def _refresh_job() -> None:
-    result = await run_refresh(get_connection())
+    # Its own cursor: this runs in a worker thread alongside live requests,
+    # and a DuckDB connection must not be shared across threads.
+    result = await run_refresh(get_connection().cursor())
     logger.info(
         "Scheduled refresh: %d metric rows, %d teams, %d anomalies open",
         result.metric_rows,
@@ -38,7 +40,7 @@ async def _refresh_job() -> None:
 async def _digest_job() -> None:
     from app.notify.teams import send_weekly_digest
 
-    await send_weekly_digest(get_connection())
+    await send_weekly_digest(get_connection().cursor())
 
 
 async def startup_pass() -> None:
@@ -49,7 +51,9 @@ async def startup_pass() -> None:
     this pass is rollup plus detection only.
     """
     try:
-        await run_refresh(get_connection(), collect=False, resolve=False, notify=False)
+        await run_refresh(
+            get_connection().cursor(), collect=False, resolve=False, notify=False
+        )
     except Exception:
         logger.exception("Startup pass failed")
 
