@@ -45,14 +45,42 @@ npm run dev
 Then open http://localhost:3000. The API serves http://localhost:8000, with
 interactive docs at `/docs`.
 
-The dashboard is empty until the first collection runs. Either wait for the
-scheduler tick (`REFRESH_INTERVAL_MINUTES`, default 30) or force one:
+The dashboard is empty until it has data. The fastest way to see everything
+working is the demo organisation: open **Settings -> Data source -> Load demo
+data**, or
+
+```bash
+curl -X POST "http://localhost:8000/admin/seed-demo"
+```
+
+That fills every table with three fabricated teams of deliberately different
+health. The anomalies are not written by hand: the seeded activity goes through
+the real rollup and the real engine, so the demo shows what Watchtower actually
+detects. Only the Phi-4 summaries are pre-written, because the model runs
+locally and may not be up. The top bar says "Demo data" the whole time it is in
+use, and a live GitHub sync is refused while the data source is demo so the two
+can never interleave.
+
+For real teams, switch the data source to GitHub in Settings, list the repos to
+watch, and force a cycle:
 
 ```bash
 curl -X POST "http://localhost:8000/admin/refresh"
 ```
 
 Add `?resolve=false` to skip the model, `?collect=false` to skip GitHub.
+
+## The hosted demo
+
+`apps/frontend` deploys to Vercel as a self-contained demo: a build on Vercel
+turns on demo mode, and the app serves a snapshot of real API responses from
+`src/app/api/demo` instead of looking for a backend that cannot exist on a
+static host. Writes answer 403 and the question box says plainly that no model
+is attached, because a demo that quietly fakes its own capabilities is worse
+than one that admits its edges.
+
+Regenerate the snapshot after changing the seeder: run the backend, seed it,
+then re-run the capture documented in `apps/frontend/README.md`.
 
 ## What the backend does
 
@@ -67,6 +95,7 @@ Add `?resolve=false` to skip the model, `?collect=false` to skip GitHub.
 | `app/jobs.py` | The detect → verify → resolve cycle, and the labeling loop |
 | `app/notify/teams.py` | Adaptive cards on critical anomalies, weekly digest |
 | `app/scheduler.py` | APScheduler jobs, overlap-guarded |
+| `app/seed/demo.py` | The fabricated three-team organisation used for demos |
 
 ### Design decisions worth knowing
 
@@ -82,6 +111,11 @@ Add `?resolve=false` to skip the model, `?collect=false` to skip GitHub.
   dashboard.
 - **Each anomaly alerts exactly once.** `anomaly_events.notified_at` is the
   guard, so a 30-minute refresh is not a 30-minute notification.
+- **Every DuckDB caller gets its own cursor.** The connection is not
+  thread-safe, and FastAPI's threadpool plus the scheduler's workers will use
+  it concurrently. Sharing one handle does not raise; it silently returns empty
+  results, which showed up on the dashboard as a team card reading
+  "Engineers 0" mid-refresh.
 - **Timestamps are naive UTC everywhere**, because that is what DuckDB stores;
   the API serializes them with an explicit `Z` so the browser cannot read them
   as local time.
@@ -99,13 +133,15 @@ Add `?resolve=false` to skip the model, `?collect=false` to skip GitHub.
 | `POST /teams/{id}/ask` | Streams a grounded Phi-4 answer as plain text |
 | `GET /anomalies` | Cross-team feed, filterable by severity |
 | `POST /admin/refresh` | Run one full cycle now |
+| `POST /admin/seed-demo` | Fill every table with the demo organisation |
+| `GET/PUT /admin/settings` | Data source and watched repos. Never returns a secret |
 | `GET /admin/resolutions` | The labeled outcome log |
 
 ## Tests
 
 ```bash
 cd apps/backend
-pytest          # 58 tests: engine, rollup, bus factor, DuckDB, jobs, API
+pytest          # 69 tests: engine, rollup, bus factor, DuckDB, jobs, seeder, API
 ruff check app tests
 ```
 

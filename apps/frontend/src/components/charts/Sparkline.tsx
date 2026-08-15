@@ -13,6 +13,7 @@ import {
 } from "chart.js";
 import { Line } from "react-chartjs-2";
 import { cn } from "@/lib/cn";
+import { useThemeColors } from "@/lib/theme";
 import type { TeamStatus } from "@/lib/types";
 
 ChartJS.register(
@@ -24,18 +25,12 @@ ChartJS.register(
   Filler,
 );
 
-// Canvas can't read Tailwind classes, so these mirror the state tokens in
-// tailwind.config.ts as literal colors.
-const STATUS_LINE_COLOR: Record<TeamStatus, string> = {
-  healthy: "#107c10",
-  "at-risk": "#ffb900",
-  critical: "#d13438",
-};
-
-const STATUS_FILL_COLOR: Record<TeamStatus, string> = {
-  healthy: "rgba(16, 124, 16, 0.12)",
-  "at-risk": "rgba(255, 185, 0, 0.16)",
-  critical: "rgba(209, 52, 56, 0.12)",
+// Canvas cannot read Tailwind classes, so the sparkline reads the same CSS
+// variables as the rest of the UI and follows the theme with it.
+const STATUS_TOKEN: Record<TeamStatus, string> = {
+  healthy: "--state-success",
+  "at-risk": "--state-warning",
+  critical: "--state-error",
 };
 
 export interface SparklineProps {
@@ -47,13 +42,16 @@ export interface SparklineProps {
 
 /** Trend shape only: no axes, no legend, no tooltip, colored by team status. */
 export function Sparkline({ data, status, className }: SparklineProps) {
+  const color = useThemeColors();
+  const token = STATUS_TOKEN[status];
+
   const chartData: ChartData<"line"> = {
     labels: data.map((_, index) => String(index)),
     datasets: [
       {
         data,
-        borderColor: STATUS_LINE_COLOR[status],
-        backgroundColor: STATUS_FILL_COLOR[status],
+        borderColor: color(token),
+        backgroundColor: color(token, 0.14),
         borderWidth: 1.75,
         pointRadius: 0,
         pointHoverRadius: 0,

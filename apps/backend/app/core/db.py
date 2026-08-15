@@ -137,6 +137,18 @@ def init_schema(conn: duckdb.DuckDBPyConnection) -> None:
         )
     """)
 
+    # Operator-facing configuration that should outlive a process restart and
+    # be editable from the Settings page. Secrets never live here: the GitHub
+    # token stays in .env, and this table only ever holds non-sensitive
+    # configuration like which repos to watch.
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS app_settings (
+            key TEXT PRIMARY KEY,
+            value TEXT NOT NULL,
+            updated_at TIMESTAMP NOT NULL
+        )
+    """)
+
     conn.execute(
         "CREATE INDEX IF NOT EXISTS idx_commits_repo_time "
         "ON commits (repo, committed_at)"
@@ -871,3 +883,37 @@ def get_summary(conn: duckdb.DuckDBPyConnection, team: str) -> SummaryRow | None
         [team],
     ).fetchone()
     return SummaryRow(*row) if row else None
+
+
+# --- operator settings ------------------------------------------------------
+
+SETTING_DATA_SOURCE = "data_source"
+SETTING_GITHUB_REPOS = "github_repos"
+
+DATA_SOURCE_DEMO = "demo"
+DATA_SOURCE_GITHUB = "github"
+
+
+def set_setting(
+    conn: duckdb.DuckDBPyConnection, key: str, value: str, updated_at: datetime
+) -> None:
+    conn.execute(
+        "INSERT INTO app_settings (key, value, updated_at) VALUES (?, ?, ?) "
+        "ON CONFLICT (key) DO UPDATE SET value = excluded.value, "
+        "updated_at = excluded.updated_at",
+        [key, value, updated_at],
+    )
+
+
+def get_setting(
+    conn: duckdb.DuckDBPyConnection, key: str, default: str | None = None
+) -> str | None:
+    row = conn.execute(
+        "SELECT value FROM app_settings WHERE key = ?", [key]
+    ).fetchone()
+    return row[0] if row else default
+
+
+def get_all_settings(conn: duckdb.DuckDBPyConnection) -> dict[str, str]:
+    rows = conn.execute("SELECT key, value FROM app_settings").fetchall()
+    return dict(rows)

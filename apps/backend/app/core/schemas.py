@@ -137,3 +137,45 @@ class RefreshResult(ApiModel):
 
 class HealthResponse(BaseModel):
     status: str
+
+
+class SettingsOut(ApiModel):
+    """Operator-visible configuration. Never carries a secret value.
+
+    `github_token_configured` is a boolean on purpose: the Settings page needs
+    to tell you whether a token is present, and nothing more. The token itself
+    stays in .env and never crosses this boundary.
+    """
+
+    data_source: Literal["demo", "github"]
+    github_repos: list[str] = Field(default_factory=list)
+    github_token_configured: bool
+    teams_webhook_configured: bool
+    scheduler_enabled: bool
+    refresh_interval_minutes: int
+    duckdb_path: str
+    llm_base_url: str
+    llm_model: str
+
+
+class SettingsUpdate(ApiModel):
+    """Only the two things a user may change from the UI.
+
+    An ApiModel, not a bare BaseModel: the frontend speaks camelCase, and a
+    snake_case-only model would silently ignore `dataSource` and persist
+    nothing while still answering 200.
+    """
+
+    data_source: Literal["demo", "github"] | None = None
+    github_repos: list[str] | None = None
+
+
+class SeedResultOut(ApiModel):
+    teams: int
+    commits: int
+    pushes: int
+    pull_requests: int
+    resolutions: int
+    summaries: int
+    metric_rows: int
+    anomalies_open: int

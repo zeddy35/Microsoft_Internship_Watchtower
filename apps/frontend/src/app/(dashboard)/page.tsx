@@ -103,13 +103,13 @@ export default function OverviewPage() {
             />
             <StatTile
               icon={IconAlertTriangle}
-              label="Critical"
+              label="Critical teams"
               value={teamsQuery.isPending ? "—" : String(critical)}
               tone={critical > 0 ? "error" : "default"}
             />
             <StatTile
               icon={IconAlertTriangle}
-              label="At risk"
+              label="At-risk teams"
               value={teamsQuery.isPending ? "—" : String(atRisk)}
               tone={atRisk > 0 ? "warning" : "default"}
             />

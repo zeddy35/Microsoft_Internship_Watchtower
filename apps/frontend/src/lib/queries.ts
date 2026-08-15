@@ -10,13 +10,17 @@ import { useCallback, useRef, useState } from "react";
 import {
   ApiError,
   askTeam,
+  clearAllData,
   getAnomalies,
+  getSettings,
   getTeam,
   getTeamAnomalies,
   getTeamMetrics,
   getTeams,
   getTeamSummary,
   refreshNow,
+  seedDemoData,
+  updateSettings,
 } from "@/lib/api";
 import type {
   Anomaly,
@@ -196,4 +200,45 @@ export function useAskTeam(teamId: string): AskState {
   );
 
   return { answer, isStreaming, error, ask, reset };
+}
+
+// --- settings and demo data -------------------------------------------------
+
+export const settingsKey = ["settings"] as const;
+
+export function useAppSettings() {
+  return useQuery({
+    queryKey: settingsKey,
+    queryFn: getSettings,
+    staleTime: STALE_TIME_MS,
+    retry: retryUnlessClientError,
+  });
+}
+
+export function useUpdateSettings() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: updateSettings,
+    onSuccess: (settings) => {
+      queryClient.setQueryData(settingsKey, settings);
+      queryClient.invalidateQueries();
+    },
+  });
+}
+
+/** Seeding rewrites every table, so everything on screen is invalidated. */
+export function useSeedDemoData() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: seedDemoData,
+    onSuccess: () => queryClient.invalidateQueries(),
+  });
+}
+
+export function useClearData() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: clearAllData,
+    onSuccess: () => queryClient.invalidateQueries(),
+  });
 }

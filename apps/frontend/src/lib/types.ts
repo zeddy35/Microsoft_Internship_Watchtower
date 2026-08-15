@@ -115,3 +115,34 @@ export const TeamSchema = z.object({
   activity: z.array(z.number()).default([]),
 });
 export type Team = z.infer<typeof TeamSchema>;
+
+// Operator settings ---------------------------------------------------------
+
+export const DataSourceSchema = z.enum(["demo", "github"]);
+export type DataSource = z.infer<typeof DataSourceSchema>;
+
+export const AppSettingsSchema = z.object({
+  dataSource: DataSourceSchema,
+  githubRepos: z.array(z.string()),
+  // Booleans by design: the API never sends the token or the webhook URL.
+  githubTokenConfigured: z.boolean(),
+  teamsWebhookConfigured: z.boolean(),
+  schedulerEnabled: z.boolean(),
+  refreshIntervalMinutes: z.number(),
+  duckdbPath: z.string(),
+  llmBaseUrl: z.string(),
+  llmModel: z.string(),
+});
+export type AppSettings = z.infer<typeof AppSettingsSchema>;
+
+export const SeedResultSchema = z.object({
+  teams: z.number(),
+  commits: z.number(),
+  pushes: z.number(),
+  pullRequests: z.number(),
+  resolutions: z.number(),
+  summaries: z.number(),
+  metricRows: z.number(),
+  anomaliesOpen: z.number(),
+});
+export type SeedResult = z.infer<typeof SeedResultSchema>;

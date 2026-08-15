@@ -25,11 +25,13 @@ import httpx
 
 from app.config import get_settings
 from app.core.db import (
+    SETTING_GITHUB_REPOS,
     CommitRow,
     PullRequestRow,
     PushRow,
     get_connection,
     get_repo_last_synced_at,
+    get_setting,
     insert_commits,
     insert_pushes,
     update_repo_synced_at,
@@ -257,8 +259,17 @@ async def collect_all() -> None:
     # and a DuckDB connection must not be shared across threads.
     conn = get_connection().cursor()
 
+    # The Settings page writes the repo list to the database; .env is only the
+    # default for a fresh install.
+    stored = get_setting(conn, SETTING_GITHUB_REPOS)
+    repos = (
+        [r.strip() for r in stored.split(",") if r.strip()]
+        if stored is not None
+        else settings.GITHUB_REPOS
+    )
+
     async with _make_client(settings.GITHUB_TOKEN) as client:
-        for repo in settings.GITHUB_REPOS:
+        for repo in repos:
             try:
                 await collect_repo(client, conn, repo)
             except Exception:

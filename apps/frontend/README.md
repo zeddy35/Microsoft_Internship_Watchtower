@@ -61,6 +61,33 @@ src/
     types.ts            zod schemas shared with the backend contract
 ```
 
+## Theming
+
+Every colour is a CSS variable defined in `src/app/globals.css`, and
+`tailwind.config.ts` maps the Tailwind tokens onto them. Switching theme is a
+class on `<html>`, so no component carries `dark:` variants and adding a theme
+means editing one file. The token names are the light-mode Fluent ramp and
+should be read as roles: `neutral-white` is "the raised surface",
+`neutral-lighter-alt` is "the page behind it". A blocking inline script sets
+the class before first paint so dark-mode users never see a white flash.
+
+Charts read the same variables at runtime (`useThemeColors`) because canvas
+cannot consume CSS classes, and literal hex values are how a chart ends up
+unreadable in one of the two themes.
+
+## The hosted demo
+
+A build on Vercel sets `NEXT_PUBLIC_DEMO_MODE=1` automatically (see
+`next.config.ts`), which points the API client at `/api/demo` — route handlers
+that serve `src/lib/demo-snapshot.json`, a capture of what the real API
+returned after seeding the demo organisation. Set `NEXT_PUBLIC_DEMO_MODE=0` in
+the Vercel project to point a deployment at a real API instead.
+
+To regenerate the snapshot, run the backend, seed it, and capture every
+endpoint into `src/lib/demo-snapshot.json` with the shape
+`{ teams, anomalies, settings, resolutions, byTeam: { [id]: { team, metrics,
+anomalies, busFactor, summary } } }`.
+
 ## Notes
 
 - Every API response is re-parsed with zod. A backend field rename fails at the
@@ -68,5 +95,5 @@ src/
   component tree.
 - `POST /teams/{id}/ask` streams plain text; `useAskTeam` renders tokens as
   they arrive and aborts an in-flight answer when a new question is asked.
-- Chart colors are literal hex values mirroring `tailwind.config.ts`, because
-  canvas cannot read Tailwind classes.
+- Chart colours come from the theme's CSS variables at runtime, so they follow
+  light and dark without a second palette to keep in step.

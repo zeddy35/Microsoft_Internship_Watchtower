@@ -59,7 +59,9 @@ DAYS_PER_WEEK = 7.0
 
 # Health score: every open anomaly costs points against a perfect 100.
 SEVERITY_PENALTY: dict[str, float] = {"critical": 25.0, "warning": 10.0, "info": 3.0}
-CRITICAL_SCORE_BELOW = 50.0
+# Inclusive on purpose: two open criticals cost exactly 50 points, and a team
+# sitting on two criticals is not "at risk", it is in trouble.
+CRITICAL_SCORE_AT_OR_BELOW = 50.0
 AT_RISK_SCORE_BELOW = 75.0
 
 # A metric has to move this far off baseline before the card turns amber/red.
@@ -124,7 +126,7 @@ def _health_score(events: list[AnomalyEventRow]) -> float:
 
 
 def _status_for_score(score: float) -> TeamStatus:
-    if score < CRITICAL_SCORE_BELOW:
+    if score <= CRITICAL_SCORE_AT_OR_BELOW:
         return "critical"
     if score < AT_RISK_SCORE_BELOW:
         return "at-risk"

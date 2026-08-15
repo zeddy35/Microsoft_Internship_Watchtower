@@ -1,0 +1,931 @@
+{
+ "teams": [
+  {
+   "id": "azure-core-networking",
+   "name": "Azure Core Networking",
+   "status": "critical",
+   "healthScore": 50.0,
+   "engineerCount": 5,
+   "source": "microsoft/azure-core-networking",
+   "members": [
+    {
+     "id": "epetrova",
+     "name": "epetrova",
+     "role": "Area owner",
+     "initials": "EP",
+     "commitsPerWeek": 27.5,
+     "avgReviewTimeDays": 1.1,
+     "onGoalRate": 43.6,
+     "activityStatus": "active"
+    },
+    {
+     "id": "wchen",
+     "name": "wchen",
+     "role": "Contributor",
+     "initials": "WC",
+     "commitsPerWeek": 1.8,
+     "avgReviewTimeDays": 0.0,
+     "onGoalRate": 57.1,
+     "activityStatus": "active"
+    },
+    {
+     "id": "rmalhotra",
+     "name": "rmalhotra",
+     "role": "Contributor",
+     "initials": "RM",
+     "commitsPerWeek": 1.5,
+     "avgReviewTimeDays": 0.3,
+     "onGoalRate": 50.0,
+     "activityStatus": "away"
+    },
+    {
+     "id": "pnair",
+     "name": "pnair",
+     "role": "Contributor",
+     "initials": "PN",
+     "commitsPerWeek": 1.2,
+     "avgReviewTimeDays": 0.5,
+     "onGoalRate": 80.0,
+     "activityStatus": "active"
+    },
+    {
+     "id": "mjohnson",
+     "name": "mjohnson",
+     "role": "Contributor",
+     "initials": "MJ",
+     "commitsPerWeek": 1.0,
+     "avgReviewTimeDays": 0.0,
+     "onGoalRate": 0.0,
+     "activityStatus": "active"
+    }
+   ],
+   "busFactorAreas": [
+    {
+     "id": "microsoft-azure-core-networking",
+     "area": "microsoft/azure-core-networking",
+     "topOwner": "epetrova",
+     "ownershipPercent": 78.9,
+     "riskLevel": "high"
+    }
+   ],
+   "activity": [
+    0.0,
+    8.0,
+    8.0,
+    7.0,
+    10.0,
+    11.0,
+    0.0,
+    0.0,
+    7.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+   ]
+  },
+  {
+   "id": "fabric-data-plane",
+   "name": "Fabric Data Plane",
+   "status": "at-risk",
+   "healthScore": 65.0,
+   "engineerCount": 4,
+   "source": "microsoft/fabric-data-plane",
+   "members": [
+    {
+     "id": "skowalski",
+     "name": "skowalski",
+     "role": "Area owner",
+     "initials": "SK",
+     "commitsPerWeek": 13.5,
+     "avgReviewTimeDays": 0.5,
+     "onGoalRate": 55.6,
+     "activityStatus": "active"
+    },
+    {
+     "id": "achen",
+     "name": "achen",
+     "role": "Contributor",
+     "initials": "AC",
+     "commitsPerWeek": 4.5,
+     "avgReviewTimeDays": 0.0,
+     "onGoalRate": 55.6,
+     "activityStatus": "active"
+    },
+    {
+     "id": "yfujita",
+     "name": "yfujita",
+     "role": "Contributor",
+     "initials": "YF",
+     "commitsPerWeek": 4.0,
+     "avgReviewTimeDays": 0.6,
+     "onGoalRate": 56.2,
+     "activityStatus": "active"
+    },
+    {
+     "id": "dmartinez",
+     "name": "dmartinez",
+     "role": "Contributor",
+     "initials": "DM",
+     "commitsPerWeek": 3.8,
+     "avgReviewTimeDays": 0.9,
+     "onGoalRate": 60.0,
+     "activityStatus": "away"
+    }
+   ],
+   "busFactorAreas": [
+    {
+     "id": "microsoft-fabric-data-plane",
+     "area": "microsoft/fabric-data-plane",
+     "topOwner": "skowalski",
+     "ownershipPercent": 55.8,
+     "riskLevel": "medium"
+    }
+   ],
+   "activity": [
+    0.0,
+    7.0,
+    6.0,
+    6.0,
+    5.0,
+    6.0,
+    0.0,
+    0.0,
+    2.0,
+    3.0,
+    3.0,
+    3.0,
+    4.0,
+    0.0
+   ]
+  },
+  {
+   "id": "m365-copilot-extensibility",
+   "name": "M365 Copilot Extensibility",
+   "status": "healthy",
+   "healthScore": 100.0,
+   "engineerCount": 5,
+   "source": "microsoft/m365-copilot-extensibility",
+   "members": [
+    {
+     "id": "lbergstrom",
+     "name": "lbergstrom",
+     "role": "Area owner",
+     "initials": "LB",
+     "commitsPerWeek": 13.5,
+     "avgReviewTimeDays": 0.3,
+     "onGoalRate": 53.7,
+     "activityStatus": "active"
+    },
+    {
+     "id": "gosullivan",
+     "name": "gosullivan",
+     "role": "Contributor",
+     "initials": "GO",
+     "commitsPerWeek": 6.2,
+     "avgReviewTimeDays": 0.0,
+     "onGoalRate": 44.0,
+     "activityStatus": "active"
+    },
+    {
+     "id": "tnakamura",
+     "name": "tnakamura",
+     "role": "Contributor",
+     "initials": "TN",
+     "commitsPerWeek": 4.8,
+     "avgReviewTimeDays": 0.4,
+     "onGoalRate": 57.9,
+     "activityStatus": "active"
+    },
+    {
+     "id": "kadeyemi",
+     "name": "kadeyemi",
+     "role": "Contributor",
+     "initials": "KA",
+     "commitsPerWeek": 4.2,
+     "avgReviewTimeDays": 0.3,
+     "onGoalRate": 58.8,
+     "activityStatus": "active"
+    },
+    {
+     "id": "hschmidt",
+     "name": "hschmidt",
+     "role": "Contributor",
+     "initials": "HS",
+     "commitsPerWeek": 4.0,
+     "avgReviewTimeDays": 0.3,
+     "onGoalRate": 31.2,
+     "activityStatus": "active"
+    }
+   ],
+   "busFactorAreas": [
+    {
+     "id": "microsoft-m365-copilot-extensibility",
+     "area": "microsoft/m365-copilot-extensibility",
+     "topOwner": "lbergstrom",
+     "ownershipPercent": 36.3,
+     "riskLevel": "low"
+    }
+   ],
+   "activity": [
+    0.0,
+    7.0,
+    6.0,
+    5.0,
+    7.0,
+    7.0,
+    0.0,
+    0.0,
+    2.0,
+    9.0,
+    4.0,
+    7.0,
+    6.0,
+    0.0
+   ]
+  }
+ ],
+ "anomalies": [
+  {
+   "id": "azure-core-networking-review-time-hours",
+   "teamId": "azure-core-networking",
+   "severity": "critical",
+   "title": "Review time spiked",
+   "description": "Review time is 93.4 hours, 1170% above the 28-day baseline of 7.4 hours (z=27.2).",
+   "detectedAt": "2026-08-15T19:09:33.825043Z"
+  },
+  {
+   "id": "azure-core-networking-stale-prs",
+   "teamId": "azure-core-networking",
+   "severity": "critical",
+   "title": "2 stale PRs",
+   "description": "2 open PRs unmerged for more than 7 days; the oldest (microsoft/azure-core-networking#4023) has been open 18 days.",
+   "detectedAt": "2026-08-15T19:09:33.825043Z"
+  },
+  {
+   "id": "fabric-data-plane-review-time-hours",
+   "teamId": "fabric-data-plane",
+   "severity": "critical",
+   "title": "Review time spiked",
+   "description": "Review time is 30.7 hours, 157% above the 28-day baseline of 11.9 hours (z=16.8).",
+   "detectedAt": "2026-08-15T19:09:33.825043Z"
+  },
+  {
+   "id": "fabric-data-plane-stale-prs",
+   "teamId": "fabric-data-plane",
+   "severity": "warning",
+   "title": "1 stale PR",
+   "description": "1 open PR unmerged for more than 7 days; the oldest (microsoft/fabric-data-plane#4045) has been open 11 days.",
+   "detectedAt": "2026-08-15T19:09:33.825043Z"
+  }
+ ],
+ "settings": {
+  "dataSource": "demo",
+  "githubRepos": [
+   "microsoft/vscode"
+  ],
+  "githubTokenConfigured": false,
+  "teamsWebhookConfigured": false,
+  "schedulerEnabled": true,
+  "refreshIntervalMinutes": 30,
+  "duckdbPath": "(hosted demo, in-memory snapshot)",
+  "llmBaseUrl": "(not connected in the hosted demo)",
+  "llmModel": "phi-4"
+ },
+ "resolutions": [
+  {
+   "anomalyId": "Azure Core Networking:review_time_hours",
+   "teamId": "Azure Core Networking",
+   "metric": "review_time_hours",
+   "severity": "critical",
+   "action": "Rebalance the review queue across the team",
+   "outcome": "cleared",
+   "detectedAt": "2026-07-23T19:09:28.594601",
+   "resolvedAt": "2026-08-01T19:09:28.594601",
+   "openDays": 9.0
+  },
+  {
+   "anomalyId": "Azure Core Networking:commits_per_day",
+   "teamId": "Azure Core Networking",
+   "metric": "commits_per_day",
+   "severity": "warning",
+   "action": "Split the migration work into reviewable chunks",
+   "outcome": "cleared",
+   "detectedAt": "2026-07-23T19:09:28.594601",
+   "resolvedAt": "2026-07-27T19:09:28.594601",
+   "openDays": 4.0
+  },
+  {
+   "anomalyId": "Fabric Data Plane:pushes_per_day",
+   "teamId": "Fabric Data Plane",
+   "metric": "pushes_per_day",
+   "severity": "warning",
+   "action": "Re-enable the nightly integration branch",
+   "outcome": "cleared",
+   "detectedAt": "2026-07-16T19:09:28.594601",
+   "resolvedAt": "2026-07-22T19:09:28.594601",
+   "openDays": 6.0
+  },
+  {
+   "anomalyId": "Fabric Data Plane:stale_prs",
+   "teamId": "Fabric Data Plane",
+   "metric": "stale_prs",
+   "severity": "warning",
+   "action": "Assign a backup reviewer for the ingest area",
+   "outcome": "cleared",
+   "detectedAt": "2026-07-14T19:09:28.594601",
+   "resolvedAt": "2026-07-17T19:09:28.594601",
+   "openDays": 3.0
+  },
+  {
+   "anomalyId": "M365 Copilot Extensibility:commits_per_day",
+   "teamId": "M365 Copilot Extensibility",
+   "metric": "commits_per_day",
+   "severity": "info",
+   "action": "No action needed; the dip was a public holiday",
+   "outcome": "cleared",
+   "detectedAt": "2026-07-10T19:09:28.594601",
+   "resolvedAt": "2026-07-12T19:09:28.594601",
+   "openDays": 2.0
+  }
+ ],
+ "byTeam": {
+  "azure-core-networking": {
+   "team": {
+    "id": "azure-core-networking",
+    "name": "Azure Core Networking",
+    "status": "critical",
+    "healthScore": 50.0,
+    "engineerCount": 5,
+    "source": "microsoft/azure-core-networking",
+    "members": [
+     {
+      "id": "epetrova",
+      "name": "epetrova",
+      "role": "Area owner",
+      "initials": "EP",
+      "commitsPerWeek": 27.5,
+      "avgReviewTimeDays": 1.1,
+      "onGoalRate": 43.6,
+      "activityStatus": "active"
+     },
+     {
+      "id": "wchen",
+      "name": "wchen",
+      "role": "Contributor",
+      "initials": "WC",
+      "commitsPerWeek": 1.8,
+      "avgReviewTimeDays": 0.0,
+      "onGoalRate": 57.1,
+      "activityStatus": "active"
+     },
+     {
+      "id": "rmalhotra",
+      "name": "rmalhotra",
+      "role": "Contributor",
+      "initials": "RM",
+      "commitsPerWeek": 1.5,
+      "avgReviewTimeDays": 0.3,
+      "onGoalRate": 50.0,
+      "activityStatus": "away"
+     },
+     {
+      "id": "pnair",
+      "name": "pnair",
+      "role": "Contributor",
+      "initials": "PN",
+      "commitsPerWeek": 1.2,
+      "avgReviewTimeDays": 0.5,
+      "onGoalRate": 80.0,
+      "activityStatus": "active"
+     },
+     {
+      "id": "mjohnson",
+      "name": "mjohnson",
+      "role": "Contributor",
+      "initials": "MJ",
+      "commitsPerWeek": 1.0,
+      "avgReviewTimeDays": 0.0,
+      "onGoalRate": 0.0,
+      "activityStatus": "active"
+     }
+    ],
+    "busFactorAreas": [
+     {
+      "id": "microsoft-azure-core-networking",
+      "area": "microsoft/azure-core-networking",
+      "topOwner": "epetrova",
+      "ownershipPercent": 78.9,
+      "riskLevel": "high"
+     }
+    ],
+    "activity": [
+     0.0,
+     8.0,
+     8.0,
+     7.0,
+     10.0,
+     11.0,
+     0.0,
+     0.0,
+     7.0,
+     1.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0
+    ]
+   },
+   "metrics": {
+    "metrics": [
+     {
+      "id": "commit-activity",
+      "label": "Commit activity",
+      "unit": "/wk",
+      "value": 7.0,
+      "baseline": 40.5,
+      "delta": -83.0,
+      "direction": "down",
+      "trend": "bad"
+     },
+     {
+      "id": "push-frequency",
+      "label": "Push frequency",
+      "unit": "/wk",
+      "value": 1.8,
+      "baseline": 5.0,
+      "delta": -65.0,
+      "direction": "down",
+      "trend": "bad"
+     },
+     {
+      "id": "pr-review-time",
+      "label": "PR review time",
+      "unit": "d",
+      "value": 3.9,
+      "baseline": 0.3,
+      "delta": 1130.0,
+      "direction": "up",
+      "trend": "bad"
+     },
+     {
+      "id": "on-goal-commits",
+      "label": "On-goal commits",
+      "unit": "%",
+      "value": 44.7,
+      "baseline": 47.0,
+      "delta": -5.0,
+      "direction": "down",
+      "trend": "good"
+     }
+    ],
+    "reviewTimeHistory": [
+     {
+      "date": "2026-07-22",
+      "reviewTimeDays": 0.32,
+      "baselineDays": 0.39
+     },
+     {
+      "date": "2026-07-28",
+      "reviewTimeDays": 0.21,
+      "baselineDays": 0.39
+     },
+     {
+      "date": "2026-07-31",
+      "reviewTimeDays": 0.31,
+      "baselineDays": 0.39
+     },
+     {
+      "date": "2026-08-03",
+      "reviewTimeDays": 0.12,
+      "baselineDays": 0.39
+     },
+     {
+      "date": "2026-08-06",
+      "reviewTimeDays": 0.5,
+      "baselineDays": 0.39
+     },
+     {
+      "date": "2026-08-12",
+      "reviewTimeDays": 3.89,
+      "baselineDays": 0.39
+     }
+    ]
+   },
+   "anomalies": [
+    {
+     "id": "azure-core-networking-review-time-hours",
+     "teamId": "azure-core-networking",
+     "severity": "critical",
+     "title": "Review time spiked",
+     "description": "Review time is 93.4 hours, 1170% above the 28-day baseline of 7.4 hours (z=27.2).",
+     "detectedAt": "2026-08-15T19:09:33.825043Z"
+    },
+    {
+     "id": "azure-core-networking-stale-prs",
+     "teamId": "azure-core-networking",
+     "severity": "critical",
+     "title": "2 stale PRs",
+     "description": "2 open PRs unmerged for more than 7 days; the oldest (microsoft/azure-core-networking#4023) has been open 18 days.",
+     "detectedAt": "2026-08-15T19:09:33.825043Z"
+    }
+   ],
+   "busFactor": [
+    {
+     "id": "microsoft-azure-core-networking",
+     "area": "microsoft/azure-core-networking",
+     "topOwner": "epetrova",
+     "ownershipPercent": 78.9,
+     "riskLevel": "high"
+    }
+   ],
+   "summary": {
+    "id": "azure-core-networking-summary-2026-08-15",
+    "teamId": "azure-core-networking",
+    "model": "Phi-4",
+    "summary": "Commit and push volume have effectively stopped over the last five days while time-to-first-review climbed past four days, which points at a review bottleneck rather than a drop in workload. Two pull requests have been open more than a week, and 78% of recent changes come from a single engineer, so the queue has nowhere else to go.",
+    "suggestions": [
+     "Rebalance the review queue: assign the two stale PRs to a second reviewer today",
+     "Pair a second engineer onto the peering configuration area",
+     "Split the largest open PR so it can be reviewed incrementally"
+    ],
+    "generatedAt": "2026-08-15T16:09:28.594601Z"
+   }
+  },
+  "fabric-data-plane": {
+   "team": {
+    "id": "fabric-data-plane",
+    "name": "Fabric Data Plane",
+    "status": "at-risk",
+    "healthScore": 65.0,
+    "engineerCount": 4,
+    "source": "microsoft/fabric-data-plane",
+    "members": [
+     {
+      "id": "skowalski",
+      "name": "skowalski",
+      "role": "Area owner",
+      "initials": "SK",
+      "commitsPerWeek": 13.5,
+      "avgReviewTimeDays": 0.5,
+      "onGoalRate": 55.6,
+      "activityStatus": "active"
+     },
+     {
+      "id": "achen",
+      "name": "achen",
+      "role": "Contributor",
+      "initials": "AC",
+      "commitsPerWeek": 4.5,
+      "avgReviewTimeDays": 0.0,
+      "onGoalRate": 55.6,
+      "activityStatus": "active"
+     },
+     {
+      "id": "yfujita",
+      "name": "yfujita",
+      "role": "Contributor",
+      "initials": "YF",
+      "commitsPerWeek": 4.0,
+      "avgReviewTimeDays": 0.6,
+      "onGoalRate": 56.2,
+      "activityStatus": "active"
+     },
+     {
+      "id": "dmartinez",
+      "name": "dmartinez",
+      "role": "Contributor",
+      "initials": "DM",
+      "commitsPerWeek": 3.8,
+      "avgReviewTimeDays": 0.9,
+      "onGoalRate": 60.0,
+      "activityStatus": "away"
+     }
+    ],
+    "busFactorAreas": [
+     {
+      "id": "microsoft-fabric-data-plane",
+      "area": "microsoft/fabric-data-plane",
+      "topOwner": "skowalski",
+      "ownershipPercent": 55.8,
+      "riskLevel": "medium"
+     }
+    ],
+    "activity": [
+     0.0,
+     7.0,
+     6.0,
+     6.0,
+     5.0,
+     6.0,
+     0.0,
+     0.0,
+     2.0,
+     3.0,
+     3.0,
+     3.0,
+     4.0,
+     0.0
+    ]
+   },
+   "metrics": {
+    "metrics": [
+     {
+      "id": "commit-activity",
+      "label": "Commit activity",
+      "unit": "/wk",
+      "value": 13.1,
+      "baseline": 31.8,
+      "delta": -59.0,
+      "direction": "down",
+      "trend": "bad"
+     },
+     {
+      "id": "push-frequency",
+      "label": "Push frequency",
+      "unit": "/wk",
+      "value": 4.4,
+      "baseline": 5.0,
+      "delta": -12.0,
+      "direction": "down",
+      "trend": "good"
+     },
+     {
+      "id": "pr-review-time",
+      "label": "PR review time",
+      "unit": "d",
+      "value": 1.3,
+      "baseline": 0.5,
+      "delta": 161.0,
+      "direction": "up",
+      "trend": "bad"
+     },
+     {
+      "id": "on-goal-commits",
+      "label": "On-goal commits",
+      "unit": "%",
+      "value": 56.3,
+      "baseline": 54.7,
+      "delta": 3.0,
+      "direction": "up",
+      "trend": "good"
+     }
+    ],
+    "reviewTimeHistory": [
+     {
+      "date": "2026-07-22",
+      "reviewTimeDays": 0.44,
+      "baselineDays": 0.43
+     },
+     {
+      "date": "2026-07-28",
+      "reviewTimeDays": 0.49,
+      "baselineDays": 0.43
+     },
+     {
+      "date": "2026-07-31",
+      "reviewTimeDays": 0.49,
+      "baselineDays": 0.43
+     },
+     {
+      "date": "2026-08-03",
+      "reviewTimeDays": 0.58,
+      "baselineDays": 0.43
+     },
+     {
+      "date": "2026-08-06",
+      "reviewTimeDays": 0.51,
+      "baselineDays": 0.43
+     },
+     {
+      "date": "2026-08-12",
+      "reviewTimeDays": 1.28,
+      "baselineDays": 0.43
+     }
+    ]
+   },
+   "anomalies": [
+    {
+     "id": "fabric-data-plane-review-time-hours",
+     "teamId": "fabric-data-plane",
+     "severity": "critical",
+     "title": "Review time spiked",
+     "description": "Review time is 30.7 hours, 157% above the 28-day baseline of 11.9 hours (z=16.8).",
+     "detectedAt": "2026-08-15T19:09:33.825043Z"
+    },
+    {
+     "id": "fabric-data-plane-stale-prs",
+     "teamId": "fabric-data-plane",
+     "severity": "warning",
+     "title": "1 stale PR",
+     "description": "1 open PR unmerged for more than 7 days; the oldest (microsoft/fabric-data-plane#4045) has been open 11 days.",
+     "detectedAt": "2026-08-15T19:09:33.825043Z"
+    }
+   ],
+   "busFactor": [
+    {
+     "id": "microsoft-fabric-data-plane",
+     "area": "microsoft/fabric-data-plane",
+     "topOwner": "skowalski",
+     "ownershipPercent": 55.8,
+     "riskLevel": "medium"
+    }
+   ],
+   "summary": {
+    "id": "fabric-data-plane-summary-2026-08-15",
+    "teamId": "fabric-data-plane",
+    "model": "Phi-4",
+    "summary": "Commit volume is down about 45% against the 28-day baseline and reviews now take roughly a day and a half, up from half a day. The team is still shipping, but the trend has been consistently downward for a week and one pull request has gone stale.",
+    "suggestions": [
+     "Clear the stale pull request before it blocks the next change",
+     "Set a same-day first-review expectation for the coming sprint"
+    ],
+    "generatedAt": "2026-08-15T16:09:28.594601Z"
+   }
+  },
+  "m365-copilot-extensibility": {
+   "team": {
+    "id": "m365-copilot-extensibility",
+    "name": "M365 Copilot Extensibility",
+    "status": "healthy",
+    "healthScore": 100.0,
+    "engineerCount": 5,
+    "source": "microsoft/m365-copilot-extensibility",
+    "members": [
+     {
+      "id": "lbergstrom",
+      "name": "lbergstrom",
+      "role": "Area owner",
+      "initials": "LB",
+      "commitsPerWeek": 13.5,
+      "avgReviewTimeDays": 0.3,
+      "onGoalRate": 53.7,
+      "activityStatus": "active"
+     },
+     {
+      "id": "gosullivan",
+      "name": "gosullivan",
+      "role": "Contributor",
+      "initials": "GO",
+      "commitsPerWeek": 6.2,
+      "avgReviewTimeDays": 0.0,
+      "onGoalRate": 44.0,
+      "activityStatus": "active"
+     },
+     {
+      "id": "tnakamura",
+      "name": "tnakamura",
+      "role": "Contributor",
+      "initials": "TN",
+      "commitsPerWeek": 4.8,
+      "avgReviewTimeDays": 0.4,
+      "onGoalRate": 57.9,
+      "activityStatus": "active"
+     },
+     {
+      "id": "kadeyemi",
+      "name": "kadeyemi",
+      "role": "Contributor",
+      "initials": "KA",
+      "commitsPerWeek": 4.2,
+      "avgReviewTimeDays": 0.3,
+      "onGoalRate": 58.8,
+      "activityStatus": "active"
+     },
+     {
+      "id": "hschmidt",
+      "name": "hschmidt",
+      "role": "Contributor",
+      "initials": "HS",
+      "commitsPerWeek": 4.0,
+      "avgReviewTimeDays": 0.3,
+      "onGoalRate": 31.2,
+      "activityStatus": "active"
+     }
+    ],
+    "busFactorAreas": [
+     {
+      "id": "microsoft-m365-copilot-extensibility",
+      "area": "microsoft/m365-copilot-extensibility",
+      "topOwner": "lbergstrom",
+      "ownershipPercent": 36.3,
+      "riskLevel": "low"
+     }
+    ],
+    "activity": [
+     0.0,
+     7.0,
+     6.0,
+     5.0,
+     7.0,
+     7.0,
+     0.0,
+     0.0,
+     2.0,
+     9.0,
+     4.0,
+     7.0,
+     6.0,
+     0.0
+    ]
+   },
+   "metrics": {
+    "metrics": [
+     {
+      "id": "commit-activity",
+      "label": "Commit activity",
+      "unit": "/wk",
+      "value": 24.5,
+      "baseline": 35.5,
+      "delta": -31.0,
+      "direction": "down",
+      "trend": "caution"
+     },
+     {
+      "id": "push-frequency",
+      "label": "Push frequency",
+      "unit": "/wk",
+      "value": 4.4,
+      "baseline": 5.0,
+      "delta": -12.0,
+      "direction": "down",
+      "trend": "good"
+     },
+     {
+      "id": "pr-review-time",
+      "label": "PR review time",
+      "unit": "d",
+      "value": 0.2,
+      "baseline": 0.3,
+      "delta": -38.0,
+      "direction": "down",
+      "trend": "good"
+     },
+     {
+      "id": "on-goal-commits",
+      "label": "On-goal commits",
+      "unit": "%",
+      "value": 50.4,
+      "baseline": 49.3,
+      "delta": 2.0,
+      "direction": "up",
+      "trend": "good"
+     }
+    ],
+    "reviewTimeHistory": [
+     {
+      "date": "2026-07-22",
+      "reviewTimeDays": 0.34,
+      "baselineDays": 0.25
+     },
+     {
+      "date": "2026-07-28",
+      "reviewTimeDays": 0.37,
+      "baselineDays": 0.25
+     },
+     {
+      "date": "2026-07-31",
+      "reviewTimeDays": 0.33,
+      "baselineDays": 0.25
+     },
+     {
+      "date": "2026-08-03",
+      "reviewTimeDays": 0.38,
+      "baselineDays": 0.25
+     },
+     {
+      "date": "2026-08-06",
+      "reviewTimeDays": 0.33,
+      "baselineDays": 0.25
+     },
+     {
+      "date": "2026-08-12",
+      "reviewTimeDays": 0.21,
+      "baselineDays": 0.25
+     }
+    ]
+   },
+   "anomalies": [],
+   "busFactor": [
+    {
+     "id": "microsoft-m365-copilot-extensibility",
+     "area": "microsoft/m365-copilot-extensibility",
+     "topOwner": "lbergstrom",
+     "ownershipPercent": 36.3,
+     "riskLevel": "low"
+    }
+   ],
+   "summary": {
+    "id": "m365-copilot-extensibility-summary-2026-08-15",
+    "teamId": "m365-copilot-extensibility",
+    "model": "Phi-4",
+    "summary": "Cadence is steady, reviews land within a working day, and ownership is spread across five contributors with no area above 35%. Nothing here needs attention this week.",
+    "suggestions": [
+     "Keep the current review rotation"
+    ],
+    "generatedAt": "2026-08-15T16:09:28.594601Z"
+   }
+  }
+ }
+}

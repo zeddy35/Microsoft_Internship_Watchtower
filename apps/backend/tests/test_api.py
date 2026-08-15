@@ -246,3 +246,61 @@ def test_each_request_gets_its_own_database_handle():
     assert first is not second
     # Both still see the same database.
     assert first.execute("SELECT 1").fetchone() == second.execute("SELECT 1").fetchone()
+
+
+def test_settings_never_leak_the_token(client):
+    """The page needs to know whether a token exists, and nothing more."""
+    payload = client.get("/admin/settings").json()
+
+    assert payload["dataSource"] in {"demo", "github"}
+    assert isinstance(payload["githubTokenConfigured"], bool)
+    assert "githubToken" not in payload
+    assert "token" not in json.dumps(payload).lower().replace("tokenconfigured", "")
+
+
+def test_settings_update_round_trips(client):
+    updated = client.put(
+        "/admin/settings",
+        json={"dataSource": "demo", "githubRepos": ["microsoft/vscode", " "]},
+    ).json()
+
+    assert updated["dataSource"] == "demo"
+    assert updated["githubRepos"] == ["microsoft/vscode"]
+    assert client.get("/admin/settings").json()["dataSource"] == "demo"
+
+
+def test_seed_demo_fills_the_dashboard(client):
+    payload = client.post("/admin/seed-demo").json()
+
+    assert payload["teams"] == 3
+    assert payload["commits"] > 0
+    assert payload["resolutions"] > 0
+    assert payload["summaries"] == 3
+    assert payload["anomaliesOpen"] > 0
+
+    teams = client.get("/teams").json()
+    assert len(teams) == 3
+    assert client.get("/admin/resolutions").json()
+    # Every seeded team has a cached verdict, so no summary card 404s.
+    for team in teams:
+        assert client.get(f"/teams/{team['id']}/summary").status_code == 200
+
+
+def test_demo_data_is_never_topped_up_with_a_live_sync(client, monkeypatch):
+    """Mixing fabricated and collected rows would make both untrue."""
+    client.put("/admin/settings", json={"dataSource": "demo"})
+
+    called = False
+
+    async def fail_if_called():
+        nonlocal called
+        called = True
+
+    monkeypatch.setattr("app.collectors.github.collect_all", fail_if_called)
+
+    payload = client.post(
+        "/admin/refresh", params={"resolve": False, "notify": False}
+    ).json()
+
+    assert called is False
+    assert payload["collected"] is False

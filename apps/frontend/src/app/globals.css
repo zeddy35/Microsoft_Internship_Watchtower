@@ -2,6 +2,100 @@
 @tailwind components;
 @tailwind utilities;
 
+/*
+ * Theme tokens.
+ *
+ * Every colour in the app is one of these variables, so switching themes is a
+ * class on <html> rather than a `dark:` variant on every element. The values
+ * are space-separated RGB channels because tailwind.config.ts wraps them in
+ * `rgb(var(--x) / <alpha-value>)`, which keeps opacity utilities working.
+ *
+ * The token *names* are the light-mode Fluent ramp and are kept as-is so no
+ * component had to be rewritten. Read them as roles rather than literal
+ * colours: `neutral-white` is "the raised surface", `neutral-lighter-alt` is
+ * "the page behind it", `neutral-primary` is "the strongest text". In dark
+ * mode `neutral-white` is near-black, which reads oddly in isolation but keeps
+ * one meaning per token.
+ */
+
+@layer base {
+  :root {
+    color-scheme: light;
+
+    --brand: 0 120 212;
+    --brand-hover: 16 110 190;
+    --brand-dark: 0 90 158;
+    --brand-darker: 0 69 120;
+    --brand-light: 199 224 244;
+    --brand-lighter: 222 236 249;
+    --brand-tint: 239 246 252;
+
+    --neutral-white: 255 255 255;
+    --neutral-lighter-alt: 250 249 248;
+    --neutral-lighter: 243 242 241;
+    --neutral-light: 237 235 233;
+    --neutral-quaternary: 225 223 221;
+    --neutral-tertiary-alt: 200 198 196;
+    --neutral-tertiary: 161 159 157;
+    --neutral-secondary: 96 94 92;
+    --neutral-primary-alt: 59 58 57;
+    --neutral-primary: 50 49 48;
+    --neutral-dark: 32 31 30;
+
+    --state-success: 16 124 16;
+    --state-success-bg: 223 246 221;
+    --state-warning: 255 185 0;
+    --state-warning-fg: 138 109 0;
+    --state-warning-bg: 255 244 206;
+    --state-severe: 216 59 1;
+    --state-severe-bg: 254 217 204;
+    --state-severe-fg: 138 55 7;
+    --state-error: 209 52 56;
+    --state-error-fg: 164 38 44;
+    --state-error-bg: 253 231 233;
+  }
+
+  .dark {
+    color-scheme: dark;
+
+    /* Brand lifts in dark mode: #0078d4 on a near-black surface fails contrast
+       for text and reads muddy for chart strokes. */
+    --brand: 87 172 255;
+    --brand-hover: 122 190 255;
+    --brand-dark: 45 138 224;
+    --brand-darker: 20 105 180;
+    --brand-light: 43 95 143;
+    --brand-lighter: 30 68 99;
+    --brand-tint: 23 41 58;
+
+    --neutral-white: 31 30 29;
+    --neutral-lighter-alt: 22 21 20;
+    --neutral-lighter: 43 42 41;
+    --neutral-light: 59 58 57;
+    --neutral-quaternary: 72 70 68;
+    --neutral-tertiary-alt: 96 94 92;
+    --neutral-tertiary: 161 159 157;
+    --neutral-secondary: 200 198 196;
+    --neutral-primary-alt: 225 223 221;
+    --neutral-primary: 243 242 241;
+    --neutral-dark: 255 255 255;
+
+    /* State colours are lightened and their backgrounds are tonal rather than
+       inverted: a light-mode pastel behind light text fails contrast outright. */
+    --state-success: 107 183 0;
+    --state-success-bg: 26 46 16;
+    --state-warning: 255 204 51;
+    --state-warning-fg: 255 217 102;
+    --state-warning-bg: 51 41 10;
+    --state-severe: 255 140 74;
+    --state-severe-bg: 58 30 14;
+    --state-severe-fg: 255 157 107;
+    --state-error: 255 107 112;
+    --state-error-fg: 255 138 144;
+    --state-error-bg: 58 21 24;
+  }
+}
+
 body {
   @apply bg-neutral-lighter-alt font-sans text-neutral-primary;
 }

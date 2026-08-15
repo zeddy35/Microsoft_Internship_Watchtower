@@ -14,6 +14,7 @@ import {
 } from "chart.js";
 import { Line } from "react-chartjs-2";
 import { cn } from "@/lib/cn";
+import { useThemeColors } from "@/lib/theme";
 
 ChartJS.register(
   CategoryScale,
@@ -25,14 +26,9 @@ ChartJS.register(
   Tooltip,
 );
 
-// Canvas rendering can't consume Tailwind classes, so these mirror the
-// brand / state / neutral tokens in tailwind.config.ts as literal colors.
-const LINE_COLOR = "#0078d4";
-const LINE_FILL_COLOR = "rgba(0, 120, 212, 0.12)";
-const ANOMALY_COLOR = "#d13438";
-const BASELINE_COLOR = "#a19f9d";
-const AXIS_TEXT_COLOR = "#605e5c";
-const GRID_COLOR = "#edebe9";
+// Canvas cannot consume Tailwind classes, so the chart reads the same CSS
+// variables the rest of the UI uses (see lib/theme.tsx). Literal hex values
+// here are how a chart ends up unreadable in one of the two themes.
 
 export interface ReviewTimeDataPoint {
   /** ISO date string, e.g. "2026-06-24" */
@@ -59,6 +55,14 @@ function formatDays(value: number | string | null) {
 }
 
 export function ReviewTimeChart({ data, className }: ReviewTimeChartProps) {
+  const color = useThemeColors();
+  const LINE_COLOR = color("--brand");
+  const LINE_FILL_COLOR = color("--brand", 0.12);
+  const ANOMALY_COLOR = color("--state-error");
+  const BASELINE_COLOR = color("--neutral-tertiary");
+  const AXIS_TEXT_COLOR = color("--neutral-secondary");
+  const GRID_COLOR = color("--neutral-light");
+
   const lastIndex = data.length - 1;
 
   const pointRadius = data.map((_, index) => (index === lastIndex ? 6 : 0));

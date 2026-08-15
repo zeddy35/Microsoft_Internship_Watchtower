@@ -27,10 +27,13 @@ from app.anomaly.engine import Anomaly, detect_team_anomalies
 from app.config import get_settings
 from app.core.clock import utcnow
 from app.core.db import (
+    DATA_SOURCE_DEMO,
+    SETTING_DATA_SOURCE,
     SummaryRow,
     anomaly_event_id,
     clear_anomaly_event,
     get_open_anomaly_events,
+    get_setting,
     get_summary,
     insert_resolution,
     list_teams,
@@ -184,6 +187,12 @@ async def run_refresh(
     notify: bool = True,
 ) -> RefreshResult:
     """One full cycle. Safe to call from a route or from the scheduler."""
+    # A database that holds fabricated demo data must not be topped up with a
+    # live GitHub sync: the two would interleave and neither would be true.
+    if collect and get_setting(conn, SETTING_DATA_SOURCE) == DATA_SOURCE_DEMO:
+        logger.info("Data source is demo; skipping collection")
+        collect = False
+
     collected = False
     if collect:
         from app.collectors.github import collect_all

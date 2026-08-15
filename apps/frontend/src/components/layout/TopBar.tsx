@@ -1,5 +1,7 @@
 // Top bar: product wordmark and the signed-in user, with sign out.
 // Server component: it reads the session directly, no client round trip.
+import { DataSourceBadge } from "@/components/layout/DataSourceBadge";
+import { ThemeToggle } from "@/components/layout/ThemeToggle";
 import { auth, isAuthConfigured, signOut } from "@/auth";
 
 function initialsFor(name: string) {
@@ -18,45 +20,51 @@ export async function TopBar() {
           up with the page instead of drifting to the screen edges on a wide
           display. */}
       <div className="mx-auto flex w-full max-w-[1600px] items-center justify-between px-6">
-        <p className="text-sm font-medium text-neutral-secondary">
-          Engineering health
-        </p>
+        <div className="flex items-center gap-3">
+          <p className="text-sm font-medium text-neutral-secondary">
+            Engineering health
+          </p>
+          <DataSourceBadge />
+        </div>
 
-        {user ? (
-          <div className="flex items-center gap-3">
-            <div className="hidden text-right sm:block">
-              <p className="text-xs font-medium text-neutral-primary">
-                {user.name ?? "Signed in"}
-              </p>
-              {user.email && (
-                <p className="text-xs text-neutral-tertiary">{user.email}</p>
-              )}
-            </div>
-            <span
-              className="flex size-8 shrink-0 items-center justify-center rounded-full bg-brand-tint text-xs font-semibold text-brand"
-              title={user.name ?? undefined}
-            >
-              {initialsFor(user.name ?? user.email ?? "?")}
-            </span>
-            <form
-              action={async () => {
-                "use server";
-                await signOut({ redirectTo: "/signin" });
-              }}
-            >
-              <button
-                type="submit"
-                className="rounded-control px-2.5 py-1.5 text-xs font-medium text-neutral-secondary transition-colors hover:bg-neutral-lighter hover:text-neutral-primary"
+        <div className="flex items-center gap-3">
+          <ThemeToggle />
+          {user ? (
+            <div className="flex items-center gap-3">
+              <div className="hidden text-right sm:block">
+                <p className="text-xs font-medium text-neutral-primary">
+                  {user.name ?? "Signed in"}
+                </p>
+                {user.email && (
+                  <p className="text-xs text-neutral-tertiary">{user.email}</p>
+                )}
+              </div>
+              <span
+                className="flex size-8 shrink-0 items-center justify-center rounded-full bg-brand-tint text-xs font-semibold text-brand"
+                title={user.name ?? undefined}
               >
-                Sign out
-              </button>
-            </form>
-          </div>
-        ) : (
-          <span className="text-xs text-neutral-tertiary">
-            {isAuthConfigured ? "Not signed in" : "Local mode"}
-          </span>
-        )}
+                {initialsFor(user.name ?? user.email ?? "?")}
+              </span>
+              <form
+                action={async () => {
+                  "use server";
+                  await signOut({ redirectTo: "/signin" });
+                }}
+              >
+                <button
+                  type="submit"
+                  className="rounded-control px-2.5 py-1.5 text-xs font-medium text-neutral-secondary transition-colors hover:bg-neutral-lighter hover:text-neutral-primary"
+                >
+                  Sign out
+                </button>
+              </form>
+            </div>
+          ) : (
+            <span className="text-xs text-neutral-tertiary">
+              {isAuthConfigured ? "Not signed in" : "Local mode"}
+            </span>
+          )}
+        </div>
       </div>
     </header>
   );

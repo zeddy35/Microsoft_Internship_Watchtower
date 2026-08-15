@@ -1,11 +1,15 @@
 import type { ZodType } from "zod";
 import {
   AnomalySchema,
+  AppSettingsSchema,
+  SeedResultSchema,
   TeamMetricsSchema,
   TeamSchema,
   TeamSummarySchema,
   type Anomaly,
   type AnomalySeverity,
+  type AppSettings,
+  type SeedResult,
   type Team,
   type TeamMetrics,
   type TeamSummary,
@@ -20,9 +24,19 @@ import { z } from "zod";
  * rendering `undefined` three components deep.
  */
 
-export const API_BASE_URL = (
-  process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8000"
-).replace(/\/$/, "");
+/**
+ * The deployed demo has no FastAPI backend to talk to, so it points at the
+ * bundled snapshot routes instead (see app/api/demo). Everything else about
+ * the client is identical, including the zod validation.
+ */
+export const IS_HOSTED_DEMO = process.env.NEXT_PUBLIC_DEMO_MODE === "1";
+
+export const API_BASE_URL = IS_HOSTED_DEMO
+  ? "/api/demo"
+  : (process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8000").replace(
+      /\/$/,
+      "",
+    );
 
 export class ApiError extends Error {
   readonly status: number;
@@ -174,4 +188,30 @@ export async function refreshNow(): Promise<void> {
   if (!response.ok) {
     throw new ApiError(response.status, await readErrorDetail(response));
   }
+}
+
+// --- settings and demo data -------------------------------------------------
+
+export function getSettings(): Promise<AppSettings> {
+  return request("/admin/settings", AppSettingsSchema);
+}
+
+export function updateSettings(
+  patch: Partial<Pick<AppSettings, "dataSource" | "githubRepos">>,
+): Promise<AppSettings> {
+  return request("/admin/settings", AppSettingsSchema, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(patch),
+  });
+}
+
+/** Fill every table with the fabricated three-team organisation. */
+export function seedDemoData(): Promise<SeedResult> {
+  return request("/admin/seed-demo", SeedResultSchema, { method: "POST" });
+}
+
+/** Empty every data table, leaving configuration in place. */
+export function clearAllData(): Promise<AppSettings> {
+  return request("/admin/clear", AppSettingsSchema, { method: "POST" });
 }
