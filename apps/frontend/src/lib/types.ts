@@ -83,6 +83,23 @@ export const TeamSummarySchema = z.object({
 });
 export type TeamSummary = z.infer<typeof TeamSummarySchema>;
 
+// Review-time trend point --------------------------------------------------
+
+export const ReviewTimePointSchema = z.object({
+  date: z.string(),
+  reviewTimeDays: z.number(),
+  baselineDays: z.number(),
+});
+export type ReviewTimePoint = z.infer<typeof ReviewTimePointSchema>;
+
+// Drill-down metrics payload -----------------------------------------------
+
+export const TeamMetricsSchema = z.object({
+  metrics: z.array(MetricSchema),
+  reviewTimeHistory: z.array(ReviewTimePointSchema),
+});
+export type TeamMetrics = z.infer<typeof TeamMetricsSchema>;
+
 // Team -----------------------------------------------------------------
 
 export const TeamSchema = z.object({
@@ -94,5 +111,7 @@ export const TeamSchema = z.object({
   source: z.string(),
   members: z.array(TeamMemberSchema),
   busFactorAreas: z.array(BusFactorAreaSchema),
+  // Commits per day over the trailing fortnight, oldest first.
+  activity: z.array(z.number()).default([]),
 });
 export type Team = z.infer<typeof TeamSchema>;

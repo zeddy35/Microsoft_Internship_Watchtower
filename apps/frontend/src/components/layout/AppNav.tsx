@@ -14,6 +14,8 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState, type ComponentType } from "react";
 import { cn } from "@/lib/cn";
+import { useTeams } from "@/lib/queries";
+import type { TeamStatus } from "@/lib/types";
 
 type NavItem = {
   label: string;
@@ -29,32 +31,21 @@ const NAV_ITEMS: NavItem[] = [
   { label: "Settings", href: "/settings", icon: IconSettings },
 ];
 
-type TeamStatus = "success" | "warning" | "error" | "neutral";
-
-type Team = {
-  id: string;
-  name: string;
-  status: TeamStatus;
-};
-
-const TEAMS: Team[] = [
-  { id: "growth", name: "Growth", status: "success" },
-  { id: "platform", name: "Platform", status: "success" },
-  { id: "data", name: "Data", status: "warning" },
-  { id: "payments", name: "Payments", status: "error" },
-  { id: "mobile", name: "Mobile", status: "neutral" },
-];
-
 const STATUS_DOT_CLASSES: Record<TeamStatus, string> = {
-  success: "bg-state-success",
-  warning: "bg-state-warning",
-  error: "bg-state-error",
-  neutral: "bg-neutral-tertiary",
+  healthy: "bg-state-success",
+  "at-risk": "bg-state-warning",
+  critical: "bg-state-error",
 };
+
+// The rail lists the teams that need attention first and stops well short of
+// the fold; the Teams page is where the full list lives.
+const RAIL_TEAM_LIMIT = 6;
 
 export function AppNav() {
   const [collapsed, setCollapsed] = useState(false);
   const pathname = usePathname();
+  const { data: teams = [] } = useTeams();
+  const railTeams = teams.slice(0, RAIL_TEAM_LIMIT);
 
   return (
     <nav
@@ -131,35 +122,38 @@ export function AppNav() {
         })}
       </ul>
 
-      <div className="border-t border-neutral-light px-2 py-3">
-        {!collapsed && (
-          <p className="px-2.5 pb-2 text-xs font-medium text-neutral-tertiary">
-            Teams
-          </p>
-        )}
-        <ul className="flex flex-col gap-0.5">
-          {TEAMS.map((team) => (
-            <li key={team.id}>
-              <div
-                title={collapsed ? team.name : undefined}
-                className={cn(
-                  "flex items-center gap-2.5 rounded-control px-2.5 py-1.5 text-sm text-neutral-secondary",
-                  collapsed && "justify-center px-0",
-                )}
-              >
-                <span
-                  aria-hidden="true"
+      {railTeams.length > 0 && (
+        <div className="border-t border-neutral-light px-2 py-3">
+          {!collapsed && (
+            <p className="px-2.5 pb-2 text-xs font-medium text-neutral-tertiary">
+              Teams
+            </p>
+          )}
+          <ul className="flex flex-col gap-0.5">
+            {railTeams.map((team) => (
+              <li key={team.id}>
+                <Link
+                  href={`/teams/${team.id}`}
+                  title={collapsed ? team.name : undefined}
                   className={cn(
-                    "size-2 shrink-0 rounded-full",
-                    STATUS_DOT_CLASSES[team.status],
+                    "flex items-center gap-2.5 rounded-control px-2.5 py-1.5 text-sm text-neutral-secondary transition-colors hover:bg-neutral-lighter hover:text-neutral-primary",
+                    collapsed && "justify-center px-0",
                   )}
-                />
-                {!collapsed && <span className="truncate">{team.name}</span>}
-              </div>
-            </li>
-          ))}
-        </ul>
-      </div>
+                >
+                  <span
+                    aria-hidden="true"
+                    className={cn(
+                      "size-2 shrink-0 rounded-full",
+                      STATUS_DOT_CLASSES[team.status],
+                    )}
+                  />
+                  {!collapsed && <span className="truncate">{team.name}</span>}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
     </nav>
   );
 }
