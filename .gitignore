@@ -8,3 +8,10 @@ Thumbs.db
 
 # Claude Code local settings (personal permission allowlist, not shared config)
 .claude/settings.local.json
+
+# dependencies
+node_modules/
+
+# transfer artifacts
+_to_delete/
+*.tgz
